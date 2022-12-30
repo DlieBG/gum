@@ -1,4 +1,3 @@
-# FROM amazoncorretto:17-alpine-jdk as build
 FROM gradle:jdk17-alpine as build
 
 WORKDIR /app
