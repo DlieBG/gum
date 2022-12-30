@@ -15,7 +15,7 @@ Just a simple version control with a minimal resemblance to git. Just for a smal
 ```
 gum, pronounced `goohm`, is a simple version control with a cli client and a remote server. \
 First of all, we do not think in terms of files, but in terms of file versions, located in a repository. A file version is, as the name suggest a specific version of a file on your file system identified by its file name. \
-Further you still have to know that we structure our file version in specific tags. A tag is collection of file versions. The collection can only contain one file version per file name. But, just like files, tags cana be modified. Because of that we do not persist a immutable tag. Instead we save tag versions in our database. \
+Further you still have to know that we structure our file version in specific tags. A tag is collection of file versions. The collection can only contain one file version per file name. But, just like files, tags can be modified. Because of that we do not persist a immutable tag. Instead we save tag versions in our database. \
 You think that was all? You are wrong. Just one more thing, I promise! Let me introduce you to locks. These are basically locking files or tags, so only the person who locks them, can publish a new version. If you do not own the lock, you are out of luck, buddy. \
 Everything alright mate?
 
@@ -65,6 +65,10 @@ gum tag -d tag-name
 Imagine you made changes to a local file. How do we can upload it to the server? For that we have to use the update command. It will automatically create a new file version and upload the file contents into the remote database. I will ask you to double check your upload, so we can avoid silly modifications.
 ```
 gum update
+```
+Maybe you are also a very hard one, then you can skip the double check with the parameter -y.
+```
+gum update -y
 ```
 To only update a specific file, please add the -f parameter.
 ```
@@ -120,7 +124,7 @@ gum diff file-version-id file-version-id
 ```
 Thats quite annoying. If you want to quickly lookup changes between a local file and the current upstream version, just pass in the file name through the -f parameter.
 ```
-fum diff -f file-name
+gum diff -f file-name
 ```
 
 <br><br><br>
