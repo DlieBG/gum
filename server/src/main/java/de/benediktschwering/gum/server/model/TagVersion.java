@@ -8,11 +8,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import java.util.List;
+
 @Document
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Lock {
+public class TagVersion {
 
     @Id
     private String id;
@@ -22,12 +24,13 @@ public class Lock {
     private Repository repository;
 
     @NonNull
-    private String filenameRegex;
-
-    @NonNull
-    private String tagnameRegex;
+    private String tagname;
 
     @NonNull
     private String user;
+
+    @NonNull
+    @DocumentReference
+    private List<FileVersion> fileVersions;
 
 }
