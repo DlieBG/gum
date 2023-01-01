@@ -41,7 +41,7 @@ Since the initialisation there could be new versions of a file on the remote. To
 gum sync
 ```
 ```
-gum sync tag-name
+gum sync -t tag-name
 ```
 ```
 gum sync -f file-name
@@ -50,15 +50,15 @@ gum sync -f file-name
 ### tag
 Tags are wonderful. All files in the repo are tagged. You can create a new tag with all your local files.
 ```
-gum tag tag-name
+gum tag -t tag-name
 ```
 Another way of creating a tag with your current files, is by adding the -h parameter. Your tag will be hard, so you can not change it anymore. In the background we will create a normal tag and put a immutable lock on the tag. Pretty easy.
 ```
-gum tag -h tag-name
+gum tag -t tag-name -h
 ```
 To delete a tag we can add the -d parameter.
 ```
-gum tag -d tag-name
+gum tag -t tag-name -d
 ```
 
 ### update
@@ -110,11 +110,11 @@ gum history -t tag-name
 ### recall
 If you found a file version, you want to recover, you can use the recall command.
 ```
-gum recall -f file-version-id
+gum recall file-version-id
 ```
 But if you wish to recall a whole tag version, you can do that too.
 ```
-gum recall -t tag-version-id
+gum recall tag-version-id
 ```
 
 ### diff

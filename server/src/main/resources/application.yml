@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      host: ${env.MONGO_HOST}
+      port: ${env.MONGO_PORT}
+      database: gum
+      username: ${env.MONGO_USERNAME}
+      password: ${env.MONGO_PASSWORD}
+      authentication-database: admin
+
+  webflux:
+    base-path: /api
