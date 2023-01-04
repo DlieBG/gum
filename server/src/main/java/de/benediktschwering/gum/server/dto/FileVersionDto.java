@@ -20,9 +20,9 @@ public class FileVersionDto {
 
     private boolean deleted = true;
 
-    private Optional<String> md5 = Optional.empty();
+    private String md5;
 
-    private Optional<String> sha256 = Optional.empty();
+    private String sha256;
 
     public FileVersionDto(
             FileVersion fileVersion,
@@ -36,8 +36,8 @@ public class FileVersionDto {
         fileVersion.getFile(gridFsTemplate).ifPresent(
                 (file) -> {
                     deleted = false;
-                    md5 = Optional.ofNullable(file.getMetadata().get("md5").toString());
-                    sha256 = Optional.ofNullable(file.getMetadata().get("sha256").toString());
+                    md5 = file.getMetadata().get("md5").toString();
+                    sha256 = file.getMetadata().get("sha256").toString();
                 }
         );
     }

@@ -1,6 +1,5 @@
 package de.benediktschwering.gum.server.utils;
 
-import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
