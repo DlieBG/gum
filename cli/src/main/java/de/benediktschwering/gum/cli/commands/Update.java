@@ -1,16 +1,18 @@
 package de.benediktschwering.gum.cli.commands;
 import de.benediktschwering.gum.cli.utils.GumUtils;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 
-import java.nio.file.Path;
-
+@CommandLine.Command(name = "update")
 @Component
-public class Update {
-    @Resource
-    private GumUtils gumutils;
-    public void run(Path gumPath, String[] args) {
-        var file = gumutils.getFile(args);
+public class Update implements Runnable {
+    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    String file;
+    @CommandLine.Option(names = {"-y", "--yes"}, required = false)
+    boolean yes;
+    @Override
+    public void run() {
+        GumUtils.getGumConfigOrExit();
         if (file.contains(".gum")) {
             System.out.println("A filename containing .gum is not valid!");
             System.exit(0);

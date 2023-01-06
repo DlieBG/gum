@@ -1,10 +1,17 @@
 package de.benediktschwering.gum.cli.commands;
+import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 
-import java.nio.file.Path;
-
+@CommandLine.Command(name = "sync")
 @Component
-public class Sync {
-    public void run(Path gumPath, String[] args) {
+public class Sync implements Runnable {
+    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    String file;
+    @CommandLine.Option(names = {"-t", "--tag"}, required = false)
+    String tag;
+    @Override
+    public void run() {
+        GumUtils.getGumConfigOrExit();
     }
 }

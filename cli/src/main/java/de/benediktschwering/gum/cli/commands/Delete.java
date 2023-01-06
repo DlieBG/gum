@@ -1,15 +1,15 @@
 package de.benediktschwering.gum.cli.commands;
 import de.benediktschwering.gum.cli.utils.GumUtils;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 
-import java.nio.file.Path;
-
+@CommandLine.Command(name = "delete")
 @Component
-public class Delete {
-    @Resource
-    private GumUtils gumutils;
-    public void run(Path gumPath, String[] args) {
-        var file = gumutils.getFile(args);
+public class Delete implements Runnable {
+    @CommandLine.Option(names = {"-f", "--file"}, required = true)
+    String file;
+
+    public void run() {
+        GumUtils.getGumConfigOrExit();
     }
 }
