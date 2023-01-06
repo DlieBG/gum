@@ -11,7 +11,6 @@ import de.benediktschwering.gum.server.utils.GumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +34,13 @@ public class RepositoryController {
                 .toList();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{name}")
     public RepositoryDto getRepository(
-            @PathVariable("id") String id
+            @PathVariable("name") String name
     ) {
         return new RepositoryDto(
                 repositoryRepository
-                        .findById(id)
+                        .searchRepositoryByName(name)
                         .orElseThrow(GumUtils::NotFound)
         );
     }
