@@ -8,8 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateTagVersionDto {
-    private String repositoryId;
-    private String tagname;
+    private String tagName;
     private String user;
     private List<String> fileVersionIds;
 }

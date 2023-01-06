@@ -16,34 +16,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tagversion")
+@RequestMapping("{repositoryName}/tagversion")
 public class TagVersionController {
-
     @Autowired
     private RepositoryRepository repositoryRepository;
-
     @Autowired
     private FileVersionRepository fileVersionRepository;
-
     @Autowired
     private TagVersionRepository tagVersionRepository;
-
     @Autowired
     private GridFsTemplate gridFsTemplate;
-
     @GetMapping("")
     public List<TagVersionDto> getTagVersions(
-            @RequestParam("repositoryId") String repositoryId,
-            @RequestParam("tagname") String tagname
+            @PathVariable("repositoryName") String repositoryName,
+            @RequestParam("tagName") String tagName
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return tagVersionRepository
-                .searchTagVersionsByRepositoryAndTagnameOrderByIdAsc(
+                .searchTagVersionsByRepositoryAndTagNameOrderByIdAsc(
                         repository,
-                        tagname
+                        tagName
                 )
                 .stream()
                 .map(
@@ -71,11 +66,13 @@ public class TagVersionController {
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public TagVersionDto createTagVersion(
+            @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateTagVersionDto createTagVersionDto
     ) {
         return new TagVersionDto(
                 tagVersionRepository.save(
                         createTagVersionDto.toTagVersion(
+                                repositoryName,
                                 repositoryRepository,
                                 fileVersionRepository
                         )

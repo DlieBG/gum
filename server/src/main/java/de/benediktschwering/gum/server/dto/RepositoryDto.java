@@ -1,34 +1,26 @@
 package de.benediktschwering.gum.server.dto;
 
 import de.benediktschwering.gum.server.model.Repository;
+import de.benediktschwering.gum.server.model.TagVersion;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class RepositoryDto {
-
     private String id;
-
     private String name;
-
-    private List<String> tagnames;
-
-
+    private List<TagVersionDto> tagVersions;
     public RepositoryDto(
-            Repository repository
+            Repository repository,
+            GridFsTemplate gridFsTemplate
     ) {
         id = repository.getId();
         name = repository.getName();
-        tagnames = new ArrayList<String>();
-
-        repository.getTagVersions().forEach(
-                (tagVersion) -> {
-                    if (!tagnames.contains(tagVersion.getTagname()))
-                        tagnames.add(tagVersion.getTagname());
-                }
-        );
+        tagVersions = repository.getTagVersions().stream().map((tagVersion) -> new TagVersionDto(tagVersion, gridFsTemplate)).toList();
     }
 
 }

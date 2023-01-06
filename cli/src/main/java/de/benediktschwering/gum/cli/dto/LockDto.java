@@ -8,7 +8,7 @@ import lombok.Setter;
 public class LockDto {
     private String id;
     private RepositoryDto repository;
-    private String filenameRegex;
-    private String tagnameRegex;
+    private String fileNameRegex;
+    private String tagNameRegex;
     private String user;
 }

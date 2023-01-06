@@ -8,7 +8,7 @@ import lombok.Setter;
 public class FileVersionDto {
     private String id;
     private RepositoryDto repository;
-    private String filename;
+    private String fileName;
     private String user;
     private boolean deleted = true;
     private String md5;

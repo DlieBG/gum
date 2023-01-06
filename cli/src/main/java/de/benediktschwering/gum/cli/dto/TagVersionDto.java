@@ -10,7 +10,7 @@ import java.util.List;
 public class TagVersionDto {
     private String id;
     private RepositoryDto repository;
-    private String tagname;
+    private String tagName;
     private String user;
     private List<FileVersionDto> fileVersions;
 }

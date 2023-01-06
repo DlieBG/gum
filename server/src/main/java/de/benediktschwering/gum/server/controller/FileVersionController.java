@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fileversion")
+@RequestMapping("{repositoryName}/fileversion")
 public class FileVersionController {
 
     @Autowired
@@ -40,17 +40,17 @@ public class FileVersionController {
 
     @GetMapping("")
     public List<FileVersionDto> getFileVersions(
-            @RequestParam("repositoryId") String repositoryId,
-            @RequestParam("filename") String filename
+            @PathVariable("repositoryName") String repositoryName,
+            @RequestParam("fileName") String fileName
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return fileVersionRepository
-                .searchFileVersionsByRepositoryAndFilenameOrderByIdAsc(
+                .searchFileVersionsByRepositoryAndFileNameOrderByIdAsc(
                         repository,
-                        filename
+                        fileName
                 )
                 .stream()
                 .map(
@@ -97,18 +97,19 @@ public class FileVersionController {
                                 )
                         )
                 )
-                .header("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"")
+                .header("Content-Disposition", "attachment; fileName=\"" + file.getFilename() + "\"")
                 .body(gridFsOperations.getResource(file));
     }
 
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public FileVersionDto createFileVersion(
+            @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateFileVersionDto createFileVersion
     ) {
         return new FileVersionDto(
                 fileVersionRepository.save(
-                        createFileVersion.toFileVersion(repositoryRepository)
+                        createFileVersion.toFileVersion(repositoryName, repositoryRepository)
                 ),
                 gridFsTemplate
         );

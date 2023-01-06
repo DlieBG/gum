@@ -10,23 +10,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateFileVersionDto {
-
-    private String repositoryId;
-
-    private String filename;
-
+    private String fileName;
     private String user;
-
     public FileVersion toFileVersion(
+            String repositoryName,
             RepositoryRepository repositoryRepository
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return new FileVersion(
                 repository,
-                filename,
+                fileName,
                 user
         );
     }

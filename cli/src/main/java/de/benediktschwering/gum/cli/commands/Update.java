@@ -14,7 +14,7 @@ public class Update implements Runnable {
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
         if (file.contains(".gum")) {
-            System.out.println("A filename containing .gum is not valid!");
+            System.out.println("A fileName containing .gum is not valid!");
             System.exit(0);
         }
     }

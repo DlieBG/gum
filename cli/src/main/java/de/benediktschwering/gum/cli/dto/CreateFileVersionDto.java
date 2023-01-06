@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateFileVersionDto {
-    private String repositoryId;
-    private String filename;
+    private String fileName;
     private String user;
 }

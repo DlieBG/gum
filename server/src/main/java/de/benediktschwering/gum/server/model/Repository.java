@@ -16,23 +16,17 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class Repository {
-
     @Id
     private String id;
-
     @NonNull
     private String name;
-
     @ReadOnlyProperty
     @DocumentReference(lookup = "{ 'repository': ?#{#self._id} }", lazy = true)
     private List<FileVersion> fileVersions;
-
     @ReadOnlyProperty
     @DocumentReference(lookup = "{ 'repository': ?#{#self._id} }", lazy = true)
     private List<TagVersion> tagVersions;
-
     @ReadOnlyProperty
     @DocumentReference(lookup = "{ 'repository': ?#{#self._id} }", lazy = true)
     private List<Lock> locks;
-
 }

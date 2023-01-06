@@ -12,9 +12,7 @@ public class TagVersionDto {
 
     private String id;
 
-    private RepositoryDto repository;
-
-    private String tagname;
+    private String tagName;
 
     private String user;
 
@@ -25,8 +23,7 @@ public class TagVersionDto {
             GridFsTemplate gridFsTemplate
     ) {
         id = tagVersion.getId();
-        repository = new RepositoryDto(tagVersion.getRepository());
-        tagname = tagVersion.getTagname();
+        tagName = tagVersion.getTagName();
         user = tagVersion.getUser();
         fileVersions = new ArrayList<FileVersionDto>();
 

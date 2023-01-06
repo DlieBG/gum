@@ -13,21 +13,15 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 @Setter
 @RequiredArgsConstructor
 public class Lock {
-
     @Id
     private String id;
-
     @NonNull
     @DocumentReference
     private Repository repository;
-
     @NonNull
-    private String filenameRegex;
-
+    private String fileNameRegex;
     @NonNull
-    private String tagnameRegex;
-
+    private String tagNameRegex;
     @NonNull
     private String user;
-
 }
