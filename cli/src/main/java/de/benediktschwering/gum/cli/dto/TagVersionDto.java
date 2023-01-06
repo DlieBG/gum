@@ -9,7 +9,6 @@ import java.util.List;
 @Setter
 public class TagVersionDto {
     private String id;
-    private RepositoryDto repository;
     private String tagName;
     private String user;
     private List<FileVersionDto> fileVersions;
