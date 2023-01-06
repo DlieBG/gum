@@ -1,10 +1,13 @@
 package de.benediktschwering.gum.cli.commands;
+import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 
-import java.nio.file.Path;
-
+@CommandLine.Command(name = "info")
 @Component
-public class Info {
-    public void run(Path gumPath, String[] args) {
+public class Info implements Runnable {
+    @Override
+    public void run() {
+        GumUtils.getGumConfigOrExit();
     }
 }

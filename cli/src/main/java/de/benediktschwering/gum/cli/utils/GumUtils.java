@@ -1,15 +1,11 @@
 package de.benediktschwering.gum.cli.utils;
 
-import org.springframework.stereotype.Component;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
-@Component
 public class GumUtils {
-    public Path findGum() {
+    public static Path findGumPath() {
         try {
             var path = Paths.get(System.getProperty("user.dir"));
             do {
@@ -25,7 +21,16 @@ public class GumUtils {
         return null;
     }
 
-    public String getFile(String[] args) {
+    public static Object getGumConfigOrExit() {
+        var gumPath = findGumPath();
+        if (gumPath == null) {
+            System.out.println("Not in gum environment!");
+            System.exit(0);
+        }
+        return gumPath;
+    }
+
+    public static String getFile(String[] args) {
         int i = 0;
         for(;i < args.length; i++) {
             if (args[i].equals("-f")) {
