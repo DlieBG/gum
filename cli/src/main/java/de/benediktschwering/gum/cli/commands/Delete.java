@@ -10,6 +10,6 @@ public class Delete implements Runnable {
     String file;
 
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
     }
 }

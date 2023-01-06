@@ -1,5 +1,13 @@
 package de.benediktschwering.gum.cli.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,25 +29,43 @@ public class GumUtils {
         return null;
     }
 
-    public static Object getGumConfigOrExit() {
-        var gumPath = findGumPath();
-        if (gumPath == null) {
-            System.out.println("Not in gum environment!");
+    public static FullGumConfig getGumConfigOrExit() {
+        try {
+            var gumPath = findGumPath();
+            if (gumPath == null) {
+                System.out.println("Not in gum environment!");
+                System.exit(0);
+            }
+            var configPath = Paths.get(gumPath.toString(), "config.json");
+            if (!Files.exists(configPath)) {
+                System.out.println("Not in configured gum environment!");
+                System.exit(0);
+            }
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            JsonReader reader = new JsonReader(new FileReader(configPath.toFile()));
+            var gumConfig =  (GumConfig) gson.fromJson(reader, GumConfig.class);
+            return new FullGumConfig(configPath, gumConfig.getRemote(), gumConfig.getUser(), gumConfig.getCurrentTagVersion());
+        } catch (Exception e) {
+            System.out.println("Failed to read gum config!");
             System.exit(0);
         }
-        return gumPath;
+        return null;
     }
 
-    public static String getFile(String[] args) {
-        int i = 0;
-        for(;i < args.length; i++) {
-            if (args[i].equals("-f")) {
-                break;
-            }
+    public static void writeGumConfig(FullGumConfig fullConfig) {
+        try {
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            var config = new GumConfig(fullConfig.getRemote(), fullConfig.getUser(), fullConfig.getCurrentTagVersion());
+            Writer writer = new FileWriter(fullConfig.getPath().toFile());
+            gson.toJson(config, writer);
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Failed to write gum config!");
+            System.exit(0);
         }
-        if (i == args.length - 1) {
-            return null;
-        }
-        return args[i + 1];
     }
 }

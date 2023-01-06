@@ -10,6 +10,6 @@ public class Unlock implements Runnable {
     String lockId;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
     }
 }

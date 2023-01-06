@@ -12,7 +12,7 @@ public class Update implements Runnable {
     boolean yes;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
         if (file.contains(".gum")) {
             System.out.println("A filename containing .gum is not valid!");
             System.exit(0);

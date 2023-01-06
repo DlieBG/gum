@@ -10,6 +10,6 @@ public class Recall implements Runnable {
     String versionId;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
     }
 }

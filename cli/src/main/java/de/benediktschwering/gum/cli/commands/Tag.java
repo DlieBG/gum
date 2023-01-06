@@ -14,6 +14,6 @@ public class Tag implements Runnable {
     boolean delete;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
     }
 }

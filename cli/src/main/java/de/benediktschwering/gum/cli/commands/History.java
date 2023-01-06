@@ -12,7 +12,7 @@ public class History implements Runnable {
     String tag;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
         if ((tag == null && file == null) || (tag != null && file != null)) {
             System.out.println("Only tag OR file is allowed.");
             System.exit(0);

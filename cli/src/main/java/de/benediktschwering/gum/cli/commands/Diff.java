@@ -14,7 +14,7 @@ public class Diff implements Runnable {
 
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
         if (versions.length > 2) {
             System.out.println("Only two versions can be diffed against each other.");
             System.exit(0);

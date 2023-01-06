@@ -12,6 +12,6 @@ public class Sync implements Runnable {
     String tag;
     @Override
     public void run() {
-        GumUtils.getGumConfigOrExit();
+        var gumConfig = GumUtils.getGumConfigOrExit();
     }
 }
