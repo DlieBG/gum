@@ -3,9 +3,11 @@ import de.benediktschwering.gum.cli.dto.CreateFileVersionDto;
 import de.benediktschwering.gum.cli.utils.Api;
 import de.benediktschwering.gum.cli.utils.FullGumConfig;
 import de.benediktschwering.gum.cli.utils.GumUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.io.FileInputStream;
 import java.nio.file.Paths;
 
 @CommandLine.Command(name = "update")
@@ -45,15 +47,26 @@ public class Update implements Runnable {
             System.out.println("File is outside of repository!");
             return;
         }
-        //TODO check for changes
-        var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(relativeFileName.toString(), gumConfig.getUser()));
-        //TODO get file
-        var previousLocal = gumConfig.getLocalFileVersions().stream().filter(localFile -> Paths.get(localFile.getFileName()).equals(relativeFileName)).findFirst();
-        GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
-        if (previousLocal.isPresent()) {
-            gumConfig.getLocalFileVersions().remove(previousLocal.get());
+        try {
+            var previousLocal = gumConfig.getLocalFileVersions().stream().filter(localFile -> Paths.get(localFile.getFileName()).equals(relativeFileName)).findFirst();
+            var fileStream = new FileInputStream(fileToUpdate.toFile());
+            var sha256 = DigestUtils.sha256Hex(fileStream);
+            if (previousLocal.isPresent() && sha256.equals(previousLocal.get().getSha256())) {
+                System.out.println("Skipped " + relativeFileName);
+                return;
+            }
+            var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(relativeFileName.toString(), gumConfig.getUser()));
+            Api.createFileVersionFile(gumConfig.getRemote(), fileVersion.getId(), fileToUpdate.toFile());
+            GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
+            if (previousLocal.isPresent()) {
+                gumConfig.getLocalFileVersions().remove(previousLocal.get());
+            }
+            gumConfig.getLocalFileVersions().add(fileVersion);
+            GumUtils.writeGumConfig(gumConfig);
         }
-        gumConfig.getLocalFileVersions().add(fileVersion);
-        GumUtils.writeGumConfig(gumConfig);
+        catch (Exception e) {
+            System.out.println("Could not upload file!");
+            System.exit(0);
+        }
     }
 }

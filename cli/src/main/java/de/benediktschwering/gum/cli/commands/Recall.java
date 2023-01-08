@@ -4,8 +4,6 @@ import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
-import java.nio.file.Paths;
-
 @CommandLine.Command(name = "recall")
 @Component
 public class Recall implements Runnable {

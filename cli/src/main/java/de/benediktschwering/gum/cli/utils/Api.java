@@ -1,9 +1,13 @@
 package de.benediktschwering.gum.cli.utils;
 
 import de.benediktschwering.gum.cli.dto.*;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,15 +41,23 @@ public class Api {
         return fileVersionResponse.getBody();
     }
 
-    public static void createFileVersionFile(String remote, String fileVersionId) {
+    public static File getFileVersionFile(String remote, String fileVersionId) {
         RestTemplate restTemplate = new RestTemplate();
-        var response = restTemplate.postForEntity(remote + "/fileversion/" + fileVersionId + "/file", null, Object.class);
-        response.getStatusCode();
+        return restTemplate.execute(remote + "/fileversion/" + fileVersionId + "/file", HttpMethod.GET, null, clientHttpResponse -> {
+            File ret = File.createTempFile("gum", "");
+            StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(ret));
+            return ret;
+        });
     }
 
-    public static Object getFileVersionFile(String remote, String fileVersionId) {
+    public static void createFileVersionFile(String remote, String fileVersionId, File file) {
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject(remote + "/fileversion/" + fileVersionId + "/file", Object.class);
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        var body = new LinkedMultiValueMap<>();
+        body.add("file", file);
+        var requestEntity = new HttpEntity<>(body, headers);
+        restTemplate.postForEntity(remote + "/fileversion/" + fileVersionId + "/file", requestEntity, Object.class);
     }
 
     public static LockDto createLock(String remote, CreateLockDto createLockDto) {

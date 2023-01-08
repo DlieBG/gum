@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 public class GumUtils {
@@ -95,6 +96,12 @@ public class GumUtils {
             System.exit(0);
         }
         var filePath = Paths.get(repositoryPath.toString(), fileVersion.getFileName());
-        //TODO
+        Paths.get(filePath.toString(), "..").toFile().mkdirs();
+        try {
+            Files.copy(file.toPath(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            System.out.println("Could not set file '" + fileVersion.getFileName() + "' to previous version.");
+            System.exit(0);
+        }
     }
 }
