@@ -3,7 +3,8 @@ package de.benediktschwering.gum.cli.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import de.benediktschwering.gum.cli.dto.FileVersionDto;
+import de.benediktschwering.gum.cli.dto.TagVersionDto;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,6 +12,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class GumUtils {
     public static Path findGumPath() {
@@ -27,6 +29,10 @@ public class GumUtils {
 
         }
         return null;
+    }
+
+    public static Path getCWD() {
+        return Paths.get(System.getProperty("user.dir"));
     }
 
     public static FullGumConfig getGumConfigOrExit() {
@@ -46,7 +52,7 @@ public class GumUtils {
                     .create();
             JsonReader reader = new JsonReader(new FileReader(configPath.toFile()));
             var gumConfig =  (GumConfig) gson.fromJson(reader, GumConfig.class);
-            return new FullGumConfig(configPath, gumConfig.getRemote(), gumConfig.getUser(), gumConfig.getCurrentTagVersion());
+            return new FullGumConfig(Paths.get(gumPath.toString(), ".."), gumConfig.getRemote(), gumConfig.getUser(), gumConfig.getBaseTagVersion(), gumConfig.getLocalFileVersions());
         } catch (Exception e) {
             System.out.println("Failed to read gum config!");
             System.exit(0);
@@ -59,13 +65,36 @@ public class GumUtils {
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
-            var config = new GumConfig(fullConfig.getRemote(), fullConfig.getUser(), fullConfig.getCurrentTagVersion());
-            Writer writer = new FileWriter(fullConfig.getPath().toFile());
+            var config = new GumConfig(fullConfig.getRemote(), fullConfig.getUser(), fullConfig.getBaseTagVersion(), fullConfig.getLocalFileVersions());
+            Writer writer = new FileWriter(Paths.get(fullConfig.getRepositoryPath().toString(), ".gum", "config.json").toFile());
             gson.toJson(config, writer);
             writer.close();
         } catch (Exception e) {
             System.out.println("Failed to write gum config!");
             System.exit(0);
         }
+    }
+
+    public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
+        GumUtils.setDirectoryToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), tagVersionDto.getFileVersions());
+        gumConfig.setBaseTagVersion(tagVersionDto);
+        gumConfig.setLocalFileVersions(tagVersionDto.getFileVersions());
+        GumUtils.writeGumConfig(gumConfig);
+    }
+
+    public static void setDirectoryToState(Path repositoryPath, String remote, List<FileVersionDto> fileVersions) {
+        for (var fileVersion : fileVersions) {
+            setFileToState(repositoryPath, remote, fileVersion);
+        }
+    }
+
+    public static void setFileToState(Path repositoryPath, String remote, FileVersionDto fileVersion) {
+        var file = Api.getFileVersionFile(remote, fileVersion.getId());
+        if (fileVersion.getFileName().contains("..")) {
+            System.out.println("Dangerous file name encountered: '" + fileVersion.getFileName() + "' exiting...");
+            System.exit(0);
+        }
+        var filePath = Paths.get(repositoryPath.toString(), fileVersion.getFileName());
+        //TODO
     }
 }

@@ -56,6 +56,14 @@ public class LockController {
         );
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteLock(
+            @PathVariable("id") String id
+    ) {
+        lockRepository.deleteById(id);
+    }
+
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public LockDto createLock(

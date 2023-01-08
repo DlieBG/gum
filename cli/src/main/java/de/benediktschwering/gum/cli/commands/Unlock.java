@@ -1,4 +1,5 @@
 package de.benediktschwering.gum.cli.commands;
+import de.benediktschwering.gum.cli.utils.Api;
 import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -11,5 +12,6 @@ public class Unlock implements Runnable {
     @Override
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
+        Api.deleteLock(gumConfig.getRemote(), lockId);
     }
 }

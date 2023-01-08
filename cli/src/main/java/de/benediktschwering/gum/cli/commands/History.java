@@ -1,4 +1,5 @@
 package de.benediktschwering.gum.cli.commands;
+import de.benediktschwering.gum.cli.utils.Api;
 import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -15,7 +16,15 @@ public class History implements Runnable {
         var gumConfig = GumUtils.getGumConfigOrExit();
         if ((tag == null && file == null) || (tag != null && file != null)) {
             System.out.println("Only tag OR file is allowed.");
-            System.exit(0);
+            return;
+        }
+        if (tag != null) {
+            Api.getTagVersions(gumConfig.getRemote(), tag);
+            //TODO
+        }
+        if (file != null) {
+            Api.getFileVersions(gumConfig.getRemote(), file);
+            //TODO
         }
     }
 }

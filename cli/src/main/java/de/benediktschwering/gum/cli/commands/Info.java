@@ -11,7 +11,7 @@ public class Info implements Runnable {
     @Override
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
-        var path = Paths.get(gumConfig.getPath().toString(), "..").toAbsolutePath().normalize();
+        var path = Paths.get(gumConfig.getRepositoryPath().toString(), "..").toAbsolutePath().normalize();
         System.out.println(path);
         System.out.println("Remote: " + gumConfig.getRemote());
         System.out.println("User: " + gumConfig.getUser());
