@@ -1,17 +1,15 @@
 package de.benediktschwering.gum.cli.dto;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import jakarta.annotation.Nullable;
+import lombok.*;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class CreateLockDto {
-    @NonNull
+    @Nullable
     private String fileNameRegex;
-    @NonNull
+    @Nullable
     private String tagNameRegex;
     @NonNull
     private String user;

@@ -53,7 +53,7 @@ public class GumUtils {
                     .create();
             JsonReader reader = new JsonReader(new FileReader(configPath.toFile()));
             var gumConfig =  (GumConfig) gson.fromJson(reader, GumConfig.class);
-            return new FullGumConfig(Paths.get(gumPath.toString(), ".."), gumConfig.getRemote(), gumConfig.getUser(), gumConfig.getBaseTagVersion(), gumConfig.getLocalFileVersions());
+            return new FullGumConfig(Paths.get(gumPath.toString(), "..").toAbsolutePath().normalize(), gumConfig.getRemote(), gumConfig.getUser(), gumConfig.getBaseTagVersion(), gumConfig.getLocalFileVersions());
         } catch (Exception e) {
             System.out.println("Failed to read gum config!");
             System.exit(0);
@@ -76,7 +76,7 @@ public class GumUtils {
         }
     }
 
-    public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
+    public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) { //TODO remove local fileVersions not present in tagVersion
         GumUtils.setDirectoryToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), tagVersionDto.getFileVersions());
         gumConfig.setBaseTagVersion(tagVersionDto);
         gumConfig.setLocalFileVersions(tagVersionDto.getFileVersions());
@@ -90,18 +90,25 @@ public class GumUtils {
     }
 
     public static void setFileToState(Path repositoryPath, String remote, FileVersionDto fileVersion) {
-        var file = Api.getFileVersionFile(remote, fileVersion.getId());
         if (fileVersion.getFileName().contains("..")) {
             System.out.println("Dangerous file name encountered: '" + fileVersion.getFileName() + "' exiting...");
             System.exit(0);
         }
+        if (fileVersion.isDeleted()) {
+            try {
+                Files.delete(Paths.get(fileVersion.getFileName()));
+            } catch (Exception e) {
+                System.out.println("Could not set file '" + fileVersion.getFileName() + "' to version.");
+            }
+            return;
+        }
+        var file = Api.getFileVersionFile(remote, fileVersion.getId());
         var filePath = Paths.get(repositoryPath.toString(), fileVersion.getFileName());
         Paths.get(filePath.toString(), "..").toFile().mkdirs();
         try {
             Files.copy(file.toPath(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            System.out.println("Could not set file '" + fileVersion.getFileName() + "' to previous version.");
-            System.exit(0);
+            System.out.println("Could not set file '" + fileVersion.getFileName() + "' to version.");
         }
     }
 }

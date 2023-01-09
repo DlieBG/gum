@@ -117,7 +117,7 @@ public class FileVersionController {
 
     @PostMapping("/{id}/file")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void createFileVersionFile(
+    public FileVersionDto createFileVersionFile(
             @PathVariable("id") String id,
             @RequestPart("file") FilePart filePart
     ) {
@@ -132,6 +132,13 @@ public class FileVersionController {
         );
 
         fileVersionRepository.save(fileVersion);
+
+        return new FileVersionDto(
+                fileVersionRepository
+                        .findById(id)
+                        .orElseThrow(GumUtils::NotFound),
+                gridFsTemplate
+        );
     }
 
 }

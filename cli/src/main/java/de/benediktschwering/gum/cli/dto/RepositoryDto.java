@@ -10,5 +10,5 @@ import java.util.List;
 public class RepositoryDto {
     private String id;
     private String name;
-    private List<TagVersionDto> tagVersions;
+    private List<String> tags;
 }

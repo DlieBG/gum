@@ -21,15 +21,13 @@ public class RepositoryController {
     private RepositoryRepository repositoryRepository;
     @Autowired
     private TagVersionRepository tagVersionRepository;
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
 
     @GetMapping("")
     public List<RepositoryDto> getRepositories() {
         return repositoryRepository
                 .findAll()
                 .stream()
-                .map(repository -> new RepositoryDto(repository, gridFsTemplate))
+                .map(RepositoryDto::new)
                 .toList();
     }
 
@@ -40,8 +38,7 @@ public class RepositoryController {
         return new RepositoryDto(
                 repositoryRepository
                         .searchRepositoryByName(repositoryName)
-                        .orElseThrow(GumUtils::NotFound),
-                gridFsTemplate
+                        .orElseThrow(GumUtils::NotFound)
         );
     }
 
@@ -74,8 +71,7 @@ public class RepositoryController {
         );
         newRepository = repositoryRepository.findById(newRepository.getId()).orElseThrow(GumUtils::NotFound);
         return new RepositoryDto(
-                newRepository,
-                gridFsTemplate
+                newRepository
         );
     }
 

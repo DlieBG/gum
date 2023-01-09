@@ -7,8 +7,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 @CommandLine.Command(name = "update")
 @Component
@@ -24,11 +27,24 @@ public class Update implements Runnable {
             updateFile(gumConfig, file);
             return;
         }
-        updateAllFiles(gumConfig);
+        updateAllFiles(gumConfig, gumConfig.getRepositoryPath().toFile());
     }
 
-    private void updateAllFiles(FullGumConfig gumConfig) {
-        //TODO
+    private void updateAllFiles(FullGumConfig gumConfig, File directory) {
+        var files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (var file : files) {
+            if (file.toString().contains(".gum")) {
+                continue;
+            }
+            if (file.isDirectory()) {
+                updateAllFiles(gumConfig, file);
+                continue;
+            }
+            updateFile(gumConfig, file.toString());
+        }
     }
 
     private void updateFile(FullGumConfig gumConfig, String file) {
@@ -36,13 +52,16 @@ public class Update implements Runnable {
             System.out.println("A fileName containing .gum is not valid!");
             return;
         }
-        var cwd = GumUtils.getCWD();
-        var fileToUpdate = Paths.get(cwd.toString(), file);
-        if (!fileToUpdate.toFile().exists() || fileToUpdate.toFile().isDirectory()) {
-            System.out.println("File doesn't exist or is a directory!");
+        var fileToUpdate = Paths.get(file);
+        if (!fileToUpdate.toFile().exists()) {
+            System.out.println("File doesn't exist!");
             return;
         }
-        var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToUpdate);
+        if (fileToUpdate.toFile().isDirectory()) {
+            System.out.println("File is a directory!");
+            return;
+        }
+        var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToUpdate.toAbsolutePath().normalize());
         if (relativeFileName.toString().contains("..")) {
             System.out.println("File is outside of repository!");
             return;
@@ -52,21 +71,31 @@ public class Update implements Runnable {
             var fileStream = new FileInputStream(fileToUpdate.toFile());
             var sha256 = DigestUtils.sha256Hex(fileStream);
             if (previousLocal.isPresent() && sha256.equals(previousLocal.get().getSha256())) {
-                System.out.println("Skipped " + relativeFileName);
+                System.out.println("No changes in: " + relativeFileName);
                 return;
             }
+            if (!yes) {
+                Scanner userInput = new Scanner(System.in);
+                System.out.println("Add file '" + relativeFileName + "' ? (y/yes/n/no)");
+                var input = userInput.nextLine().trim().toLowerCase();
+                if (!input.equals("y") && !input.equals("yes")) {
+                    System.out.println("Skipping: " + relativeFileName);
+                    return;
+                }
+            }
             var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(relativeFileName.toString(), gumConfig.getUser()));
-            Api.createFileVersionFile(gumConfig.getRemote(), fileVersion.getId(), fileToUpdate.toFile());
+            fileVersion = Api.createFileVersionFile(gumConfig.getRemote(), fileVersion.getId(), fileToUpdate.toFile());
             GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
             if (previousLocal.isPresent()) {
                 gumConfig.getLocalFileVersions().remove(previousLocal.get());
             }
             gumConfig.getLocalFileVersions().add(fileVersion);
             GumUtils.writeGumConfig(gumConfig);
+            System.out.println("Updated: '" + relativeFileName + "' to '" + fileVersion.getId() + "'.");
         }
         catch (Exception e) {
-            System.out.println("Could not upload file!");
-            System.exit(0);
+            System.out.println("Could not update file: " + relativeFileName);
+            System.out.println("Moving to the next...");
         }
     }
 }

@@ -18,11 +18,10 @@ public class LockDto {
     private String user;
 
     public LockDto(
-            Lock lock,
-            GridFsTemplate gridFsTemplate
+            Lock lock
     ) {
         id = lock.getId();
-        repository = new RepositoryDto(lock.getRepository(), gridFsTemplate);
+        repository = new RepositoryDto(lock.getRepository());
         fileNameRegex = lock.getFileNameRegex();
         tagNameRegex = lock.getTagNameRegex();
         user = lock.getUser();

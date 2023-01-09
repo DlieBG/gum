@@ -12,8 +12,6 @@ public class FileVersionDto {
 
     private String id;
 
-    private RepositoryDto repository;
-
     private String fileName;
 
     private String user;
@@ -29,7 +27,6 @@ public class FileVersionDto {
             GridFsTemplate gridFsTemplate
     ) {
         id = fileVersion.getId();
-        repository = new RepositoryDto(fileVersion.getRepository(), gridFsTemplate);
         fileName = fileVersion.getFileName();
         user = fileVersion.getUser();
 

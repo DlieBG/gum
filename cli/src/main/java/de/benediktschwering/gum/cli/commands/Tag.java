@@ -22,9 +22,14 @@ public class Tag implements Runnable {
         var tagVersion = Api.createTagVersion(gumConfig.getRemote(), new CreateTagVersionDto(tag, gumConfig.getUser(), hard, gumConfig.getLocalFileVersions().stream().map(FileVersionDto::getId).toList()));
         if (tagVersion == null) {
             System.out.println("Could not create tag version, has somebody else a lock?");
+            return;
         }
+        gumConfig.setBaseTagVersion(tagVersion);
+        GumUtils.writeGumConfig(gumConfig);
         if (hard) {
-            Api.createLock(gumConfig.getRemote(), new CreateLockDto(null, tag, "gowl"));
+            var createLock = new CreateLockDto("gowl");
+            createLock.setTagNameRegex(tag);
+            var lock = Api.createLock(gumConfig.getRemote(), createLock);
         }
     }
 }

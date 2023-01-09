@@ -4,6 +4,8 @@ import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.nio.file.Paths;
+
 @CommandLine.Command(name = "diff")
 @Component
 public class Diff implements Runnable {
@@ -25,12 +27,33 @@ public class Diff implements Runnable {
             System.exit(0);
         }
 
-        if (file != null) {
+        if (file != null) { //TODO hash?
+            var fileToDiff = Paths.get(file);
+            var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToDiff.toAbsolutePath().normalize());
+            var previousLocal = gumConfig.getLocalFileVersions().stream().filter(file -> Paths.get(file.getFileName()).equals(relativeFileName)).findFirst();
+            if (previousLocal.isEmpty()) {
+                System.out.println("File doesn't exist locally!");
+                return;
+            }
             var fileVersions = Api.getFileVersions(gumConfig.getRemote(), file);
+            var fileVersion = fileVersions.get(fileVersions.size() - 1);
+            if (previousLocal.get().getId().equals(fileVersion.getId())) {
+                System.out.println("Local FileVersion is equal to remote version.");
+                return;
+            }
+            //TODO diff
             return;
         }
         var first = Api.getFileVersionFile(gumConfig.getRemote(), versions[0]);
+        if (first == null) {
+            System.out.println("FileVersion is not valid.");
+            return;
+        }
         var second = Api.getFileVersionFile(gumConfig.getRemote(), versions[1]);
-        //TODO
+        if (second == null) {
+            System.out.println("FileVersion is not valid.");
+            return;
+        }
+        //TODO diff
     }
 }

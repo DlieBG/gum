@@ -20,13 +20,17 @@ public class Lock implements Runnable {
             return;
         }
         if (tag != null) {
-            var lock = Api.createLock(gumConfig.getRemote(), new CreateLockDto(null,  tag, gumConfig.getUser()));
+            var createLock = new CreateLockDto(gumConfig.getUser());
+            createLock.setTagNameRegex(tag);
+            var lock = Api.createLock(gumConfig.getRemote(), createLock);
             if (lock == null) {
                 System.out.println("Could not create lock, has somebody else a lock?");
             }
         }
         if (file != null) {
-            var lock = Api.createLock(gumConfig.getRemote(), new CreateLockDto(file,  null, gumConfig.getUser()));
+            var createLock = new CreateLockDto(gumConfig.getUser());
+            createLock.setFileNameRegex(file);
+            var lock = Api.createLock(gumConfig.getRemote(), createLock);
             if (lock == null) {
                 System.out.println("Could not create lock, has somebody else a lock?");
             }

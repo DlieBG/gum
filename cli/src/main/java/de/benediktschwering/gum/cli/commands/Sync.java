@@ -28,11 +28,14 @@ public class Sync implements Runnable {
             return;
         }
         if (file != null) {
-            var cwd = GumUtils.getCWD();
-            var fileToUpdate = Paths.get(cwd.toString(), file);
-            var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToUpdate);
+            var fileToUpdate = Paths.get(file);
+            var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToUpdate.toAbsolutePath().normalize());
             var previousLocal = gumConfig.getLocalFileVersions().stream().filter(file -> Paths.get(file.getFileName()).equals(relativeFileName)).findFirst();
-            var fileVersions = Api.getFileVersions(gumConfig.getRemote(), file);
+            var fileVersions = Api.getFileVersions(gumConfig.getRemote(), relativeFileName.toString());
+            if (fileVersions.isEmpty()) {
+                System.out.println("No file version to recover!");
+                return;
+            }
             var fileVersion = fileVersions.get(fileVersions.size() - 1);
             GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
             if (previousLocal.isPresent()) {

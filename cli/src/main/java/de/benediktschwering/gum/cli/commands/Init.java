@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 @CommandLine.Command(name = "init")
 @Component
@@ -29,7 +30,7 @@ public class Init implements Runnable {
                 System.out.printf("found existing .gum folder at '%s' sub gum repositories are not supported!%n", gumPath);
                 return;
             }
-            var cwd = GumUtils.getCWD();
+            var cwd = GumUtils.getCWD().toAbsolutePath().normalize();
             var files = cwd.toFile().list();
             if ((files == null || files.length > 0) && !force) {
                 System.out.println("Directory not empty!");
@@ -37,7 +38,8 @@ public class Init implements Runnable {
             }
 
             var repository = Api.createRepository(remote);
-            var baseTagVersion = repository.getTagVersions().stream().filter(tagVersion -> tagVersion.getTagName().equals("main")).findFirst().get();
+            var tagVersions = Api.getTagVersions(remote, "main");
+            var baseTagVersion = tagVersions.get(tagVersions.size() - 1);
 
             var configDirectory = Paths.get(cwd.toString(), ".gum");
             if (!configDirectory.toFile().mkdirs()) {
@@ -45,9 +47,19 @@ public class Init implements Runnable {
                 return;
             }
             GumUtils.setDirectoryToState(cwd, remote, baseTagVersion.getFileVersions());
-            var fullGumConfig = new FullGumConfig(cwd, remote, System.getProperty("user.name"), baseTagVersion, baseTagVersion.getFileVersions());
+            var userName = System.getProperty("user.name");
+            if (userName.equals("root")) {
+                System.out.println("Could you tell us your name?");
+                Scanner userInput = new Scanner(System.in);
+                do {
+                    userName = userInput.nextLine().trim().toLowerCase();
+                }
+                while (userName.length() == 0);
+            }
+            var fullGumConfig = new FullGumConfig(cwd, remote, userName, baseTagVersion, baseTagVersion.getFileVersions());
             GumUtils.writeGumConfig(fullGumConfig);
         } catch (Exception e) {
+            System.out.println(e.getClass());
             System.out.println("Could not init repository, is the remote correct?");
         }
     }

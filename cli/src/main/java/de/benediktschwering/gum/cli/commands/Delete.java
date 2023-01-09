@@ -15,13 +15,12 @@ public class Delete implements Runnable {
 
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
-        var cwd = GumUtils.getCWD();
-        var fileToDelete = Paths.get(cwd.toString(), file);
+        var fileToDelete = Paths.get(file);
         if (!fileToDelete.toFile().exists() || fileToDelete.toFile().isDirectory()) {
             System.out.println("File doesn't exist or is a directory!");
             return;
         }
-        var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToDelete);
+        var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToDelete.toAbsolutePath().normalize());
         if (relativeFileName.toString().contains("..")) {
             System.out.println("File is outside of repository!");
             return;

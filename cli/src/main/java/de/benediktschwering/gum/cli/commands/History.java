@@ -4,6 +4,10 @@ import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+
 @CommandLine.Command(name = "history")
 @Component
 public class History implements Runnable {
@@ -19,12 +23,46 @@ public class History implements Runnable {
             return;
         }
         if (tag != null) {
-            Api.getTagVersions(gumConfig.getRemote(), tag);
-            //TODO
+            var tagVersions = Api.getTagVersions(gumConfig.getRemote(), tag);
+            if (tagVersions == null) {
+                System.out.println("Tag was not found.");
+                return;
+            }
+            var reversedTagVersions = tagVersions.subList(0, tagVersions.size());
+            Collections.reverse(reversedTagVersions);
+            for (var tagVersion : reversedTagVersions) {
+                System.out.print(tagVersion.getId() + " by " + tagVersion.getUser());
+                if (tagVersion.getId().equals(gumConfig.getBaseTagVersion().getId())) {
+                    System.out.print(" (base)");
+                }
+                System.out.println();
+            }
         }
         if (file != null) {
-            Api.getFileVersions(gumConfig.getRemote(), file);
-            //TODO
+            var fileToHist = Paths.get(file);
+            var relativeFileName = gumConfig.getRepositoryPath().relativize(fileToHist.toAbsolutePath().normalize());
+            var currentLocal = gumConfig.getLocalFileVersions().stream().filter(file -> Paths.get(file.getFileName()).equals(relativeFileName)).findFirst();
+            var baseVersion = gumConfig.getBaseTagVersion().getFileVersions().stream().filter(file -> Paths.get(file.getFileName()).equals(relativeFileName)).findFirst();
+            var fileVersions = Api.getFileVersions(gumConfig.getRemote(), relativeFileName.toString());
+            if (fileVersions == null) {
+                System.out.println("File was not found.");
+                return;
+            }
+            var reversedFileVersions = fileVersions.subList(0, fileVersions.size());
+            Collections.reverse(reversedFileVersions);
+            for (var fileVersion : reversedFileVersions) {
+                System.out.print(fileVersion.getId() + " by " + fileVersion.getUser());
+                if (fileVersion.isDeleted()) {
+                    System.out.print(" (deleted)");
+                }
+                if (currentLocal.isPresent() && fileVersion.getId().equals(currentLocal.get().getId())) {
+                    System.out.print(" (local)");
+                }
+                if (baseVersion.isPresent() && fileVersion.getId().equals(baseVersion.get().getId())) {
+                    System.out.print(" (base)");
+                }
+                System.out.println();
+            }
         }
     }
 }

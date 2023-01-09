@@ -13,14 +13,13 @@ import java.util.List;
 public class RepositoryDto {
     private String id;
     private String name;
-    private List<TagVersionDto> tagVersions;
+    private List<String> tags;
     public RepositoryDto(
-            Repository repository,
-            GridFsTemplate gridFsTemplate
+            Repository repository
     ) {
         id = repository.getId();
         name = repository.getName();
-        tagVersions = repository.getTagVersions().stream().map((tagVersion) -> new TagVersionDto(tagVersion, gridFsTemplate)).toList();
+        tags = repository.getTagVersions().stream().map(TagVersion::getTagName).distinct().toList();
     }
 
 }

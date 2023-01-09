@@ -21,8 +21,6 @@ public class LockController {
     private RepositoryRepository repositoryRepository;
     @Autowired
     private LockRepository lockRepository;
-    @Autowired
-    private GridFsTemplate gridFsTemplate;
     @GetMapping("")
     public List<LockDto> getLocks(
             @PathVariable("repositoryName") String repositoryName
@@ -35,11 +33,7 @@ public class LockController {
                 .searchLocksByRepositoryOrderByIdAsc(repository)
                 .stream()
                 .map(
-                        (Lock lock) ->
-                                new LockDto(
-                                        lock,
-                                        gridFsTemplate
-                                )
+                        LockDto::new
                 )
                 .toList();
     }
@@ -51,8 +45,7 @@ public class LockController {
         return new LockDto(
                 lockRepository
                         .findById(id)
-                        .orElseThrow(GumUtils::NotFound),
-                gridFsTemplate
+                        .orElseThrow(GumUtils::NotFound)
         );
     }
 
@@ -76,8 +69,7 @@ public class LockController {
                                 repositoryName,
                                 repositoryRepository
                         )
-                ),
-                gridFsTemplate
+                )
         );
     }
 
