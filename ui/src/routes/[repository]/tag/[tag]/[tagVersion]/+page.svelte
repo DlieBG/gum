@@ -21,7 +21,7 @@
                 <a href="../../file/{fileVersion.id}/history" class="history">history</a>
 
                 {#if !fileVersion.deleted}
-                    <a href="{data.api}/{data.repository.name}/fileversion/{fileVersion.id}/file" target="_blank"
+                    <a href="{data.publicApi}/{data.repository.name}/fileversion/{fileVersion.id}/file" target="_blank"
                        class="download">download</a>
                 {/if}
 
