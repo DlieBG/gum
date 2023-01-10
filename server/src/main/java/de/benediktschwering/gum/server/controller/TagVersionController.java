@@ -76,7 +76,7 @@ public class TagVersionController {
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
         var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
-        if (locks != null && locks.stream().anyMatch(lock -> createTagVersionDto.getTagName().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createTagVersionDto.getUser()))) {
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createTagVersionDto.getTagName().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createTagVersionDto.getUser()))) {
             throw GumUtils.Conflict();
         }
         return new TagVersionDto(

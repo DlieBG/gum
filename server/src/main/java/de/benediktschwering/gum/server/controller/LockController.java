@@ -71,10 +71,10 @@ public class LockController {
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
         var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
-        if (locks != null && locks.stream().anyMatch(lock -> createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getFileNameRegex() != null && createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
             throw GumUtils.Conflict();
         }
-        if (locks != null && locks.stream().anyMatch(lock -> createLockDto.getTagNameRegex().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createLockDto.getTagNameRegex().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
             throw GumUtils.Conflict();
         }
         return new LockDto(
