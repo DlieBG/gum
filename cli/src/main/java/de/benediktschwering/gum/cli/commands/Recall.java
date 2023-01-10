@@ -25,6 +25,8 @@ public class Recall implements Runnable {
         var tagVersion = Api.getTagVersion(gumConfig.getRemote(), versionId);
         if (tagVersion != null) {
             GumUtils.setGumToState(gumConfig, tagVersion);
+            return;
         }
+        System.out.println("Could not find version!");
     }
 }
