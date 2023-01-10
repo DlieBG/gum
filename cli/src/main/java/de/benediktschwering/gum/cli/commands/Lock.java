@@ -25,7 +25,9 @@ public class Lock implements Runnable {
             var lock = Api.createLock(gumConfig.getRemote(), createLock);
             if (lock == null) {
                 System.out.println("Could not create lock, has somebody else a lock?");
+                return;
             }
+            System.out.println("Created lock " + lock.getId());
         }
         if (file != null) {
             var createLock = new CreateLockDto(gumConfig.getUser());
@@ -33,7 +35,9 @@ public class Lock implements Runnable {
             var lock = Api.createLock(gumConfig.getRemote(), createLock);
             if (lock == null) {
                 System.out.println("Could not create lock, has somebody else a lock?");
+                return;
             }
+            System.out.println("Created lock " + lock.getId());
         }
     }
 }

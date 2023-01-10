@@ -25,12 +25,13 @@ public class CreateLockDto {
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
-        return new Lock(
+        var lock = new Lock(
                 repository,
-                fileNameRegex,
-                tagNameRegex,
                 user
         );
+        lock.setFileNameRegex(fileNameRegex);
+        lock.setTagNameRegex(tagNameRegex);
+        return lock;
     }
 
 }

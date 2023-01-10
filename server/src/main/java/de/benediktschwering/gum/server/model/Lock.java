@@ -1,5 +1,6 @@
 package de.benediktschwering.gum.server.model;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class Lock {
     @NonNull
     @DocumentReference
     private Repository repository;
-    @NonNull
+    @Nullable
     private String fileNameRegex;
-    @NonNull
+    @Nullable
     private String tagNameRegex;
     @NonNull
     private String user;

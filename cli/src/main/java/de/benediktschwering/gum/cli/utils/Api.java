@@ -78,7 +78,7 @@ public class Api {
     public static LockDto createLock(String remote, CreateLockDto createLockDto) {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            var lockResponse = restTemplate.postForEntity(remote, createLockDto, LockDto.class);
+            var lockResponse = restTemplate.postForEntity(remote + "/lock", createLockDto, LockDto.class);
             return lockResponse.getBody();
         }
         catch (HttpClientErrorException.Conflict e) {
