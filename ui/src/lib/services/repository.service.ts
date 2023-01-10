@@ -23,14 +23,10 @@ export class RepositoryService {
             .then(
                 async (response) => {
                     let repository = await response.json()
-
                     return {
                         ...repository,
                         avatar: AvatarService.getRepositoryAvatar(repository.id),
-                        tagNames: repository.tagVersions
-                            .map((tV: any) => tV.tagName)
-                            .filter((value, index, self) => self.indexOf(value) === index)
-                            .sort()
+                        tagNames: repository.tags
                     }
                 }
             );
