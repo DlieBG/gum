@@ -23,7 +23,7 @@ public class Sync implements Runnable {
 
         if (tag != null) {
             var tagVersions = Api.getTagVersions(gumConfig.getRemote(), tag);
-            var tagVersion = tagVersions.get(tagVersions.size() - 1);
+            var tagVersion = tagVersions.get(0);
             GumUtils.setGumToState(gumConfig, tagVersion);
             return;
         }
@@ -36,12 +36,12 @@ public class Sync implements Runnable {
                 System.out.println("No file version to recover!");
                 return;
             }
-            var fileVersion = fileVersions.get(fileVersions.size() - 1);
+            var fileVersion = fileVersions.get(0);
             GumUtils.setFileToVersion(gumConfig, fileVersion, previousLocal);
             return;
         }
         var tagVersions = Api.getTagVersions(gumConfig.getRemote(), gumConfig.getBaseTagVersion().getTagName());
-        var tagVersion = tagVersions.get(tagVersions.size() - 1);
+        var tagVersion = tagVersions.get(0);
         GumUtils.setGumToState(gumConfig, tagVersion);
     }
 }

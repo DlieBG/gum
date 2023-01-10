@@ -27,9 +27,7 @@ public class History implements Runnable {
                 System.out.println("Tag was not found.");
                 return;
             }
-            var reversedTagVersions = tagVersions.subList(0, tagVersions.size());
-            Collections.reverse(reversedTagVersions);
-            for (var tagVersion : reversedTagVersions) {
+            for (var tagVersion : tagVersions) {
                 System.out.print(tagVersion.getId() + " by " + tagVersion.getUser());
                 if (tagVersion.getId().equals(gumConfig.getBaseTagVersion().getId())) {
                     System.out.print(" (base)");
@@ -47,9 +45,7 @@ public class History implements Runnable {
                 System.out.println("File was not found.");
                 return;
             }
-            var reversedFileVersions = fileVersions.subList(0, fileVersions.size());
-            Collections.reverse(reversedFileVersions);
-            for (var fileVersion : reversedFileVersions) {
+            for (var fileVersion : fileVersions) {
                 System.out.print(fileVersion.getId() + " by " + fileVersion.getUser());
                 if (fileVersion.isDeleted()) {
                     System.out.print(" (deleted)");

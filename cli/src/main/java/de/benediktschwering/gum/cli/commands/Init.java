@@ -39,7 +39,7 @@ public class Init implements Runnable {
 
             var repository = Api.createRepository(remote);
             var tagVersions = Api.getTagVersions(remote, "main");
-            var baseTagVersion = tagVersions.get(tagVersions.size() - 1);
+            var baseTagVersion = tagVersions.get(0);
 
             var configDirectory = Paths.get(cwd.toString(), ".gum");
             if (!configDirectory.toFile().mkdirs()) {

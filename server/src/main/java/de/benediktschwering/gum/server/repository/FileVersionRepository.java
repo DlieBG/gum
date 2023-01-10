@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface FileVersionRepository extends MongoRepository<FileVersion, String> {
-    List<FileVersion> searchFileVersionsByRepositoryAndFileNameOrderByIdAsc(Repository repository, String fileName);
+    List<FileVersion> searchFileVersionsByRepositoryAndFileNameOrderByIdDesc(Repository repository, String fileName);
 }

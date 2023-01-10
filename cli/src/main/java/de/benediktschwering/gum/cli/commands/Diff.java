@@ -40,7 +40,7 @@ public class Diff implements Runnable {
                 System.out.println("File doesn't exist in remote!");
                 return;
             }
-            var fileVersion = fileVersions.get(fileVersions.size() - 1);
+            var fileVersion = fileVersions.get(0);
             if (fileVersion == null || fileVersion.isDeleted()) {
                 System.out.println("File doesn't exist anymore in remote!");
                 return;

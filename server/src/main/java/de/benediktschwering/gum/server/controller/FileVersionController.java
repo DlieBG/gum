@@ -52,7 +52,7 @@ public class FileVersionController {
                 .orElseThrow(GumUtils::NotFound);
 
         return fileVersionRepository
-                .searchFileVersionsByRepositoryAndFileNameOrderByIdAsc(
+                .searchFileVersionsByRepositoryAndFileNameOrderByIdDesc(
                         repository,
                         fileName
                 )
@@ -114,7 +114,7 @@ public class FileVersionController {
         Repository repository = repositoryRepository
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
-        var locks = lockRepository.searchLocksByRepositoryOrderByIdAsc(repository);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
         if (locks != null && locks.stream().anyMatch(lock -> createFileVersion.getFileName().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createFileVersion.getUser()))) {
             throw GumUtils.Conflict();
         }

@@ -3,13 +3,11 @@ package de.benediktschwering.gum.server.controller;
 import de.benediktschwering.gum.server.dto.CreateLockDto;
 import de.benediktschwering.gum.server.dto.DeleteLockDto;
 import de.benediktschwering.gum.server.dto.LockDto;
-import de.benediktschwering.gum.server.model.Lock;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,7 @@ public class LockController {
                 .orElseThrow(GumUtils::NotFound);
 
         return lockRepository
-                .searchLocksByRepositoryOrderByIdAsc(repository)
+                .searchLocksByRepositoryOrderByIdDesc(repository)
                 .stream()
                 .map(
                         LockDto::new
@@ -72,7 +70,7 @@ public class LockController {
         Repository repository = repositoryRepository
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
-        var locks = lockRepository.searchLocksByRepositoryOrderByIdAsc(repository);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
         if (locks != null && locks.stream().anyMatch(lock -> createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
             throw GumUtils.Conflict();
         }

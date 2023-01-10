@@ -47,7 +47,7 @@ public class Info implements Runnable {
         System.out.println("Remote Tags");
         for (var tag : repository.getTags()) {
             var tagVersions = Api.getTagVersions(gumConfig.getRemote(), tag);
-            var tagVersion = tagVersions.get(tagVersions.size() - 1);
+            var tagVersion = tagVersions.get(0);
             System.out.print("\t" + tagVersion.getTagName() + " : " + tagVersion.getId() + " by " + tagVersion.getUser());
             if (tagVersion.getId().equals(gumConfig.getBaseTagVersion().getId())) {
                 System.out.print(" (base)");

@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface LockRepository extends MongoRepository<Lock, String> {
-    List<Lock> searchLocksByRepositoryOrderByIdAsc(Repository repository);
+    List<Lock> searchLocksByRepositoryOrderByIdDesc(Repository repository);
 }

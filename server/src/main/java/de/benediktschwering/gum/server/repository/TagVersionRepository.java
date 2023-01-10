@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface TagVersionRepository extends MongoRepository<TagVersion, String> {
-    List<TagVersion> searchTagVersionsByRepositoryAndTagNameOrderByIdAsc(Repository repository, String tagName);
+    List<TagVersion> searchTagVersionsByRepositoryAndTagNameOrderByIdDesc(Repository repository, String tagName);
 }
