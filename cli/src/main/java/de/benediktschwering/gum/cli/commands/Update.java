@@ -83,6 +83,11 @@ public class Update implements Runnable {
                 }
             }
             var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(relativeFileName.toString(), gumConfig.getUser()));
+            if (fileVersion == null) {
+                System.out.println("Could not update file, because someone had a lock in place: " + relativeFileName);
+                System.out.println("Moving to the next...");
+                return;
+            }
             fileVersion = Api.createFileVersionFile(gumConfig.getRemote(), fileVersion.getId(), fileToUpdate.toFile());
             GumUtils.setFileToVersion(gumConfig, fileVersion, previousLocal);
             System.out.println("Updated: '" + relativeFileName + "' to '" + fileVersion.getId() + "'.");

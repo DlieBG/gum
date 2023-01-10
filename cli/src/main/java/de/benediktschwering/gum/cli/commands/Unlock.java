@@ -1,4 +1,5 @@
 package de.benediktschwering.gum.cli.commands;
+import de.benediktschwering.gum.cli.dto.DeleteLockDto;
 import de.benediktschwering.gum.cli.utils.Api;
 import de.benediktschwering.gum.cli.utils.GumUtils;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ public class Unlock implements Runnable {
     @Override
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
-        if (!Api.deleteLock(gumConfig.getRemote(), lockId)) {
+        if (!Api.deleteLock(gumConfig.getRemote(), lockId, new DeleteLockDto(gumConfig.getUser()))) {
             System.out.println("Could not delete lock, is it owned by somebody else?");
         }
     }

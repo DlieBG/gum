@@ -6,6 +6,7 @@ import de.benediktschwering.gum.server.dto.FileVersionDto;
 import de.benediktschwering.gum.server.model.FileVersion;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.repository.FileVersionRepository;
+import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class FileVersionController {
 
     @Autowired
     private RepositoryRepository repositoryRepository;
+
+    @Autowired
+    private LockRepository lockRepository;
 
     @Autowired
     private FileVersionRepository fileVersionRepository;
@@ -107,6 +111,13 @@ public class FileVersionController {
             @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateFileVersionDto createFileVersion
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdAsc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> createFileVersion.getFileName().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createFileVersion.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new FileVersionDto(
                 fileVersionRepository.save(
                         createFileVersion.toFileVersion(repositoryName, repositoryRepository)

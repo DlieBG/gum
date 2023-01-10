@@ -34,4 +34,15 @@ public class CreateLockDto {
         return lock;
     }
 
+    public Lock toLock(
+            Repository repository
+    ) {
+        var lock = new Lock(
+                repository,
+                user
+        );
+        lock.setFileNameRegex(fileNameRegex);
+        lock.setTagNameRegex(tagNameRegex);
+        return lock;
+    }
 }

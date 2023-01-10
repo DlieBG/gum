@@ -1,6 +1,7 @@
 package de.benediktschwering.gum.server.controller;
 
 import de.benediktschwering.gum.server.dto.CreateLockDto;
+import de.benediktschwering.gum.server.dto.DeleteLockDto;
 import de.benediktschwering.gum.server.dto.LockDto;
 import de.benediktschwering.gum.server.model.Lock;
 import de.benediktschwering.gum.server.model.Repository;
@@ -52,8 +53,13 @@ public class LockController {
     @DeleteMapping("/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteLock(
-            @PathVariable("id") String id
+            @PathVariable("id") String id,
+            @RequestBody DeleteLockDto deleteLockDto
     ) {
+        var lock = lockRepository.findById(id).orElseThrow(GumUtils::NotFound);
+        if (!lock.getUser().equals(deleteLockDto.getUser())) {
+            throw GumUtils.Conflict();
+        }
         lockRepository.deleteById(id);
     }
 
@@ -63,6 +69,16 @@ public class LockController {
             @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateLockDto createLockDto
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdAsc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
+        if (locks != null && locks.stream().anyMatch(lock -> createLockDto.getTagNameRegex().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new LockDto(
                 lockRepository.save(
                         createLockDto.toLock(

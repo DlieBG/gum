@@ -5,6 +5,7 @@ import de.benediktschwering.gum.server.dto.TagVersionDto;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.model.TagVersion;
 import de.benediktschwering.gum.server.repository.FileVersionRepository;
+import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.repository.TagVersionRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
@@ -24,6 +25,8 @@ public class TagVersionController {
     private FileVersionRepository fileVersionRepository;
     @Autowired
     private TagVersionRepository tagVersionRepository;
+    @Autowired
+    private LockRepository lockRepository;
     @Autowired
     private GridFsTemplate gridFsTemplate;
     @GetMapping("")
@@ -69,6 +72,13 @@ public class TagVersionController {
             @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateTagVersionDto createTagVersionDto
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdAsc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> createTagVersionDto.getTagName().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createTagVersionDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new TagVersionDto(
                 tagVersionRepository.save(
                         createTagVersionDto.toTagVersion(

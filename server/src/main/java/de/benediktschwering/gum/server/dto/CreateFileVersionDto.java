@@ -27,4 +27,13 @@ public class CreateFileVersionDto {
         );
     }
 
+    public FileVersion toFileVersion(
+            Repository repository
+    ) {
+        return new FileVersion(
+                repository,
+                fileName,
+                user
+        );
+    }
 }

@@ -1,5 +1,7 @@
 package de.benediktschwering.gum.cli.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.benediktschwering.gum.cli.dto.*;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -44,9 +46,14 @@ public class Api {
     }
 
     public static FileVersionDto createFileVersion(String remote, CreateFileVersionDto createFileVersionDto) {
-        RestTemplate restTemplate = new RestTemplate();
-        var fileVersionResponse = restTemplate.postForEntity(remote + "/fileversion", createFileVersionDto, FileVersionDto.class);
-        return fileVersionResponse.getBody();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            var fileVersionResponse = restTemplate.postForEntity(remote + "/fileversion", createFileVersionDto, FileVersionDto.class);
+            return fileVersionResponse.getBody();
+        }
+            catch (HttpClientErrorException.Conflict e) {
+            return null;
+        }
     }
 
     public static File getFileVersionFile(String remote, String fileVersionId) {
@@ -92,10 +99,15 @@ public class Api {
         return array == null ? null : Arrays.asList(array);
     }
 
-    public static boolean deleteLock(String remote, String lockId) {
+    public static boolean deleteLock(String remote, String lockId,  DeleteLockDto deleteLogDto) {
         try {
+            Gson gson = new GsonBuilder().create();
+            String jsonPayload  = gson.toJson(deleteLogDto);
+            var headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(jsonPayload.toString(), headers);
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.delete(remote + "/lock/" + lockId);
+            restTemplate.exchange(remote + "/lock/" + lockId, HttpMethod.DELETE, entity, Object.class);
             return true;
         }
         catch (HttpClientErrorException.Conflict e) {

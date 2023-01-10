@@ -31,6 +31,10 @@ public class Delete implements Runnable {
             return;
         }
         var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(file, gumConfig.getUser()));
+        if (fileVersion == null) {
+            System.out.println("Could not delete file, because someone had a lock in place.");
+            return;
+        }
         var deletionResult = fileToDelete.toFile().delete();
         if (!deletionResult) {
             System.out.println("Could not delete file!");
