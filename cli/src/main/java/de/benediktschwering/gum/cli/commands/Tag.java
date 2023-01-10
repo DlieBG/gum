@@ -14,8 +14,6 @@ public class Tag implements Runnable {
     String tag;
     @CommandLine.Option(names = {"-h", "--hard"})
     boolean hard;
-    @CommandLine.Option(names = {"-d", "--delete"})
-    boolean delete;
     @Override
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
