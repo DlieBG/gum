@@ -1,8 +1,6 @@
 <script>
     export let data;
 
-    $: tagVersions = data.tagVersions.reverse();
-
     function toTimestamp(id) {
         return new Date(parseInt(id.substr(0, 8), 16) * 1000).toLocaleString('de-DE', {
             day: '2-digit',
@@ -15,7 +13,7 @@
 </script>
 
 <div class="body">
-    {#each tagVersions as tagVersion, index (tagVersion.id)}
+    {#each data.tagVersions as tagVersion, index (tagVersion.id)}
         <div class="version">
             <div class="info">
                 <img src={tagVersion.avatar}>
@@ -30,7 +28,7 @@
             <span class="timestamp">{toTimestamp(tagVersion.id)}</span>
         </div>
 
-        {#if index !== tagVersions.length - 1}
+        {#if index !== data.tagVersions.length - 1}
             <div class="divider">
                 <div class="hr"></div>
             </div>

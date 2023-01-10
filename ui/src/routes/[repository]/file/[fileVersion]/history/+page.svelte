@@ -1,8 +1,6 @@
 <script>
     export let data;
 
-    $: fileVersions = data.fileVersions.reverse();
-
     function toTimestamp(id) {
         return new Date(parseInt(id.substr(0, 8), 16) * 1000).toLocaleString('de-DE', {
             day: '2-digit',
@@ -15,7 +13,7 @@
 </script>
 
 <div class="body">
-    {#each fileVersions as fileVersion, index (fileVersion.id)}
+    {#each data.fileVersions as fileVersion, index (fileVersion.id)}
         <div class="version">
             <div class="info">
                 <img src={fileVersion.avatar}>
@@ -34,7 +32,7 @@
             <span class="timestamp">{toTimestamp(fileVersion.id)}</span>
         </div>
 
-        {#if index !== fileVersions.length - 1}
+        {#if index !== data.fileVersions.length - 1}
             <div class="divider">
                 <div class="hr"></div>
             </div>
