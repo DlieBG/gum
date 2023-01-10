@@ -78,7 +78,8 @@ public class GumUtils {
     }
 
     public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
-        for (var localFileVersion : gumConfig.getLocalFileVersions()) {
+        var versionsCopy = gumConfig.getLocalFileVersions().subList(0, gumConfig.getLocalFileVersions().size());
+        for (var localFileVersion : versionsCopy) {
             if (tagVersionDto.getFileVersions().stream().noneMatch(tagFileVersion -> tagFileVersion.getFileName().equals(localFileVersion.getFileName()))) {
                 localFileVersion.setDeleted(true);
                 setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), localFileVersion);
