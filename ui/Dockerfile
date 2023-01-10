@@ -20,6 +20,7 @@ FROM node:18
 
 WORKDIR /app
 
+COPY --from=build /app/package.json .
 COPY --from=build /app/build build
 
 ENTRYPOINT ["node", "build"]
