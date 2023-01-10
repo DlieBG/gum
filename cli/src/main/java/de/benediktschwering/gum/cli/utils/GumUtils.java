@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +78,8 @@ public class GumUtils {
     }
 
     public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
-        List<FileVersionDto> copy = new ArrayList<>();
-        copy.addAll(gumConfig.getLocalFileVersions());
-        for (var localFileVersion : copy) {
+        var versionsCopy = gumConfig.getLocalFileVersions().subList(0, gumConfig.getLocalFileVersions().size());
+        for (var localFileVersion : versionsCopy) {
             if (tagVersionDto.getFileVersions().stream().noneMatch(tagFileVersion -> tagFileVersion.getFileName().equals(localFileVersion.getFileName()))) {
                 localFileVersion.setDeleted(true);
                 setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), localFileVersion);
