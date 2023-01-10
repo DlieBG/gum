@@ -1,5 +1,6 @@
 package de.benediktschwering.gum.server.model;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,15 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 @Setter
 @RequiredArgsConstructor
 public class Lock {
-
     @Id
     private String id;
-
     @NonNull
     @DocumentReference
     private Repository repository;
-
-    @NonNull
-    private String filenameRegex;
-
-    @NonNull
-    private String tagnameRegex;
-
+    @Nullable
+    private String fileNameRegex;
+    @Nullable
+    private String tagNameRegex;
     @NonNull
     private String user;
-
 }

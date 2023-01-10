@@ -6,6 +6,7 @@ import de.benediktschwering.gum.server.dto.FileVersionDto;
 import de.benediktschwering.gum.server.model.FileVersion;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.repository.FileVersionRepository;
+import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,18 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fileversion")
+@RequestMapping("{repositoryName}/fileversion")
 public class FileVersionController {
 
     @Autowired
     private RepositoryRepository repositoryRepository;
+
+    @Autowired
+    private LockRepository lockRepository;
 
     @Autowired
     private FileVersionRepository fileVersionRepository;
@@ -42,17 +44,17 @@ public class FileVersionController {
 
     @GetMapping("")
     public List<FileVersionDto> getFileVersions(
-            @RequestParam("repositoryId") String repositoryId,
-            @RequestParam("filename") String filename
+            @PathVariable("repositoryName") String repositoryName,
+            @RequestParam("fileName") String fileName
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return fileVersionRepository
-                .searchFileVersionsByRepositoryAndFilenameOrderByIdAsc(
+                .searchFileVersionsByRepositoryAndFileNameOrderByIdDesc(
                         repository,
-                        filename
+                        fileName
                 )
                 .stream()
                 .map(
@@ -99,18 +101,26 @@ public class FileVersionController {
                                 )
                         )
                 )
-                .header("Content-Disposition", "attachment; filename=\"" + file.getFilename() + "\"")
+                .header("Content-Disposition", "attachment; fileName=\"" + file.getFilename() + "\"")
                 .body(gridFsOperations.getResource(file));
     }
 
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public FileVersionDto createFileVersion(
+            @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateFileVersionDto createFileVersion
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getFileNameRegex() != null && createFileVersion.getFileName().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createFileVersion.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new FileVersionDto(
                 fileVersionRepository.save(
-                        createFileVersion.toFileVersion(repositoryRepository)
+                        createFileVersion.toFileVersion(repositoryName, repositoryRepository)
                 ),
                 gridFsTemplate
         );
@@ -118,7 +128,7 @@ public class FileVersionController {
 
     @PostMapping("/{id}/file")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void createFileVersionFile(
+    public FileVersionDto createFileVersionFile(
             @PathVariable("id") String id,
             @RequestPart("file") FilePart filePart
     ) {
@@ -133,6 +143,13 @@ public class FileVersionController {
         );
 
         fileVersionRepository.save(fileVersion);
+
+        return new FileVersionDto(
+                fileVersionRepository
+                        .findById(id)
+                        .orElseThrow(GumUtils::NotFound),
+                gridFsTemplate
+        );
     }
 
 }

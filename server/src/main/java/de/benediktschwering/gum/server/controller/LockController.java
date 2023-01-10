@@ -1,8 +1,8 @@
 package de.benediktschwering.gum.server.controller;
 
 import de.benediktschwering.gum.server.dto.CreateLockDto;
+import de.benediktschwering.gum.server.dto.DeleteLockDto;
 import de.benediktschwering.gum.server.dto.LockDto;
-import de.benediktschwering.gum.server.model.Lock;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
@@ -13,30 +13,26 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("{repositoryName}/lock")
 public class LockController {
-
     @Autowired
     private RepositoryRepository repositoryRepository;
-
     @Autowired
     private LockRepository lockRepository;
-
     @GetMapping("")
     public List<LockDto> getLocks(
-            @RequestParam("repositoryId") String repositoryId
+            @PathVariable("repositoryName") String repositoryName
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return lockRepository
-                .searchLocksByRepositoryOrderByIdAsc(repository)
+                .searchLocksByRepositoryOrderByIdDesc(repository)
                 .stream()
                 .map(
-                        (Lock lock) ->
-                                new LockDto(
-                                        lock
-                                )
+                        LockDto::new
                 )
                 .toList();
     }
@@ -52,14 +48,39 @@ public class LockController {
         );
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteLock(
+            @PathVariable("id") String id,
+            @RequestBody DeleteLockDto deleteLockDto
+    ) {
+        var lock = lockRepository.findById(id).orElseThrow(GumUtils::NotFound);
+        if (!lock.getUser().equals(deleteLockDto.getUser())) {
+            throw GumUtils.Conflict();
+        }
+        lockRepository.deleteById(id);
+    }
+
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public LockDto createLock(
+            @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateLockDto createLockDto
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getFileNameRegex() != null && createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createLockDto.getTagNameRegex().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new LockDto(
                 lockRepository.save(
                         createLockDto.toLock(
+                                repositoryName,
                                 repositoryRepository
                         )
                 )

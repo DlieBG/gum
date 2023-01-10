@@ -30,7 +30,7 @@ gum init https://gum.benedikt-schwering.de/repo-name
 ```
 
 ### info
-Alright! Your repository is initialised and now you want to check for changes, both local and remote. Do it with the info command.
+Alright! Your repository is initialised and now you want to check for changes, both local and remote. Do it with the info command. Untracked files will not be shown.
 ```
 gum info
 ```
@@ -56,10 +56,6 @@ Another way of creating a tag with your current files, is by adding the -h param
 ```
 gum tag -t tag-name -h
 ```
-To delete a tag we can add the -d parameter.
-```
-gum tag -t tag-name -d
-```
 
 ### update
 Imagine you made changes to a local file. How do we can upload it to the server? For that we have to use the update command. It will automatically create a new file version and upload the file contents into the remote database. I will ask you to double check your upload, so we can avoid silly modifications.
@@ -84,11 +80,11 @@ gum delete -f file-name
 ### lock
 Some people think that you can avoid concurrency by adding locks. Oh well, we can do that too. You can lock a file (in all tags) with this command.
 ```
-gum lock -f file-name-regex
+gum lock -f file-name-prefix
 ```
 But you can also lock a whole tag. We do not want to combine both variants. This would be quite confusing.
 ```
-gum lock -t tag-name-regex
+gum lock -t tag-name-prefix
 ```
 
 ### unlock

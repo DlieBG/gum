@@ -14,21 +14,19 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateTagVersionDto {
-
-    private String repositoryId;
-
-    private String tagname;
+    private String tagName;
 
     private String user;
 
     private List<String> fileVersionIds;
 
     public TagVersion toTagVersion(
+            String repositoryName,
             RepositoryRepository repositoryRepository,
             FileVersionRepository fileVersionRepository
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         List<FileVersion> fileVersions = fileVersionIds
@@ -42,7 +40,7 @@ public class CreateTagVersionDto {
 
         return new TagVersion(
                 repository,
-                tagname,
+                tagName,
                 user,
                 fileVersions
         );

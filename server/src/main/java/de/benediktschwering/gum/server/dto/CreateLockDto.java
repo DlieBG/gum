@@ -6,32 +6,43 @@ import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Getter
 @Setter
 public class CreateLockDto {
+    private String fileNameRegex;
 
-    private String repositoryId;
-
-    private String filenameRegex;
-
-    private String tagnameRegex;
+    private String tagNameRegex;
 
     private String user;
 
     public Lock toLock(
+            String repositoryName,
             RepositoryRepository repositoryRepository
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
-        return new Lock(
+        var lock = new Lock(
                 repository,
-                filenameRegex,
-                tagnameRegex,
                 user
         );
+        lock.setFileNameRegex(fileNameRegex);
+        lock.setTagNameRegex(tagNameRegex);
+        return lock;
     }
 
+    public Lock toLock(
+            Repository repository
+    ) {
+        var lock = new Lock(
+                repository,
+                user
+        );
+        lock.setFileNameRegex(fileNameRegex);
+        lock.setTagNameRegex(tagNameRegex);
+        return lock;
+    }
 }

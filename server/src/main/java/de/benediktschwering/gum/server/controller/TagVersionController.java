@@ -5,6 +5,7 @@ import de.benediktschwering.gum.server.dto.TagVersionDto;
 import de.benediktschwering.gum.server.model.Repository;
 import de.benediktschwering.gum.server.model.TagVersion;
 import de.benediktschwering.gum.server.repository.FileVersionRepository;
+import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.repository.TagVersionRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
@@ -16,34 +17,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tagversion")
+@RequestMapping("{repositoryName}/tagversion")
 public class TagVersionController {
-
     @Autowired
     private RepositoryRepository repositoryRepository;
-
     @Autowired
     private FileVersionRepository fileVersionRepository;
-
     @Autowired
     private TagVersionRepository tagVersionRepository;
-
+    @Autowired
+    private LockRepository lockRepository;
     @Autowired
     private GridFsTemplate gridFsTemplate;
-
     @GetMapping("")
     public List<TagVersionDto> getTagVersions(
-            @RequestParam("repositoryId") String repositoryId,
-            @RequestParam("tagname") String tagname
+            @PathVariable("repositoryName") String repositoryName,
+            @RequestParam("tagName") String tagName
     ) {
         Repository repository = repositoryRepository
-                .findById(repositoryId)
+                .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
 
         return tagVersionRepository
-                .searchTagVersionsByRepositoryAndTagnameOrderByIdAsc(
+                .searchTagVersionsByRepositoryAndTagNameOrderByIdDesc(
                         repository,
-                        tagname
+                        tagName
                 )
                 .stream()
                 .map(
@@ -71,11 +69,20 @@ public class TagVersionController {
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public TagVersionDto createTagVersion(
+            @PathVariable("repositoryName") String repositoryName,
             @RequestBody CreateTagVersionDto createTagVersionDto
     ) {
+        Repository repository = repositoryRepository
+                .searchRepositoryByName(repositoryName)
+                .orElseThrow(GumUtils::NotFound);
+        var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
+        if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createTagVersionDto.getTagName().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createTagVersionDto.getUser()))) {
+            throw GumUtils.Conflict();
+        }
         return new TagVersionDto(
                 tagVersionRepository.save(
                         createTagVersionDto.toTagVersion(
+                                repositoryName,
                                 repositoryRepository,
                                 fileVersionRepository
                         )

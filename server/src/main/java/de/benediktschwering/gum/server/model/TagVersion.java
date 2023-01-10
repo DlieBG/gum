@@ -15,22 +15,16 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class TagVersion {
-
     @Id
     private String id;
-
     @NonNull
     @DocumentReference
     private Repository repository;
-
     @NonNull
-    private String tagname;
-
+    private String tagName;
     @NonNull
     private String user;
-
     @NonNull
     @DocumentReference
     private List<FileVersion> fileVersions;
-
 }

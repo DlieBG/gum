@@ -28,23 +28,17 @@ public class FileVersion {
 
     @Id
     private String id;
-
     @NonNull
     @DocumentReference
     private Repository repository;
-
     @NonNull
-    private String filename;
-
+    private String fileName;
     @NonNull
     private String user;
-
     private ObjectId gridFsId;
-
     @ReadOnlyProperty
     @DocumentReference(lookup = "{ 'fileVersions': { $in: [ ?#{#self._id} ] } }", lazy = true)
     private List<TagVersion> tagVersions;
-
     public Optional<GridFSFile> getFile(
             GridFsTemplate gridFsTemplate
     ) {
@@ -56,7 +50,6 @@ public class FileVersion {
                 )
         );
     }
-
     public void setFile(
             InputStream inputStream,
             String contentType,
@@ -74,10 +67,9 @@ public class FileVersion {
             metadata.put("md5", DigestUtils.md5Hex(inputStream1));
             metadata.put("sha256", DigestUtils.sha256Hex(inputStream2));
 
-            ObjectId gridFsId = gridFsTemplate.store(inputStream3, filename, contentType, metadata);
+            ObjectId gridFsId = gridFsTemplate.store(inputStream3, fileName, contentType, metadata);
 
             setGridFsId(gridFsId);
         } catch(IOException e) { }
     }
-
 }
