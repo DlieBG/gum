@@ -59,7 +59,6 @@ public class Init implements Runnable {
             var fullGumConfig = new FullGumConfig(cwd, remote, userName, baseTagVersion, baseTagVersion.getFileVersions());
             GumUtils.writeGumConfig(fullGumConfig);
         } catch (Exception e) {
-            System.out.println(e.getClass());
             System.out.println("Could not init repository, is the remote correct?");
         }
     }
