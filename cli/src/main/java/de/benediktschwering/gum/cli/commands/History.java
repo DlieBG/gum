@@ -6,14 +6,13 @@ import picocli.CommandLine;
 
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
 
 @CommandLine.Command(name = "history")
 @Component
 public class History implements Runnable {
-    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    @CommandLine.Option(names = {"-f", "--file"})
     String file;
-    @CommandLine.Option(names = {"-t", "--tag"}, required = false)
+    @CommandLine.Option(names = {"-t", "--tag"})
     String tag;
     @Override
     public void run() {

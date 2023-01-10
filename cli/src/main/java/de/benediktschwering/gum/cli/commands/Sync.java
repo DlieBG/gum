@@ -9,9 +9,9 @@ import java.nio.file.Paths;
 @CommandLine.Command(name = "sync")
 @Component
 public class Sync implements Runnable {
-    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    @CommandLine.Option(names = {"-f", "--file"})
     String file;
-    @CommandLine.Option(names = {"-t", "--tag"}, required = false)
+    @CommandLine.Option(names = {"-t", "--tag"})
     String tag;
     @Override
     public void run() {
@@ -37,12 +37,7 @@ public class Sync implements Runnable {
                 return;
             }
             var fileVersion = fileVersions.get(fileVersions.size() - 1);
-            GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
-            if (previousLocal.isPresent()) {
-                gumConfig.getLocalFileVersions().remove(previousLocal.get());
-            }
-            gumConfig.getLocalFileVersions().add(fileVersion);
-            GumUtils.writeGumConfig(gumConfig);
+            GumUtils.setFileToVersion(gumConfig, fileVersion, previousLocal);
             return;
         }
         var tagVersions = Api.getTagVersions(gumConfig.getRemote(), gumConfig.getBaseTagVersion().getTagName());

@@ -12,9 +12,9 @@ import picocli.CommandLine;
 public class Tag implements Runnable {
     @CommandLine.Option(names = {"-t", "--tag"}, required = true)
     String tag;
-    @CommandLine.Option(names = {"-h", "--hard"}, required = false)
+    @CommandLine.Option(names = {"-h", "--hard"})
     boolean hard;
-    @CommandLine.Option(names = {"-d", "--delete"}, required = false)
+    @CommandLine.Option(names = {"-d", "--delete"})
     boolean delete;
     @Override
     public void run() {

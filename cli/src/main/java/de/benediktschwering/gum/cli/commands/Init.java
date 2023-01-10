@@ -14,7 +14,7 @@ public class Init implements Runnable {
     @CommandLine.Parameters()
     String remote;
 
-    @CommandLine.Option(names = {"-F", "--force"}, required = false)
+    @CommandLine.Option(names = {"-F", "--force"})
     boolean force;
     @Override
     public void run() {

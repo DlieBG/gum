@@ -37,7 +37,6 @@ public class Delete implements Runnable {
             return;
         }
         gumConfig.getLocalFileVersions().remove(previousLocal.get());
-        gumConfig.getLocalFileVersions().add(fileVersion);
         GumUtils.writeGumConfig(gumConfig);
     }
 }

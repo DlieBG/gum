@@ -1,9 +1,11 @@
 package de.benediktschwering.gum.cli.commands;
 import de.benediktschwering.gum.cli.utils.Api;
 import de.benediktschwering.gum.cli.utils.GumUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.io.FileInputStream;
 import java.nio.file.Paths;
 
 @CommandLine.Command(name = "info")
@@ -24,14 +26,19 @@ public class Info implements Runnable {
             System.out.print("\t" + fileVersion.getFileName() + " : " + fileVersion.getId() + " by " + fileVersion.getUser());
             var baseFileVersion = baseTag.getFileVersions().stream().filter(fv -> fv.getFileName().equals(fileVersion.getFileName())).findFirst();
             if (baseFileVersion.isPresent()) {
-                var localVersion = baseFileVersion.get();
-                if (fileVersion.isDeleted()) {
-                    System.out.print(" (deleted)");
-                }
-                if (localVersion.getId().equals(fileVersion.getId())) {
+                var baseVersion = baseFileVersion.get();
+                if (baseVersion.getId().equals(fileVersion.getId())) {
                     System.out.print(" (base)");
                 }
-                //TODO show if hash is different
+                try {
+                    var fileStream = new FileInputStream(Paths.get(gumConfig.getRepositoryPath().toString(), fileVersion.getFileName()).toFile());
+                    var sha256 = DigestUtils.sha256Hex(fileStream);
+                    if (!sha256.equals(fileVersion.getSha256())) {
+                        System.out.print(" (changed)");
+                    }
+                } catch(Exception ignored) {
+                    System.out.print(" (?)");
+                }
             }
             System.out.println();
         }
@@ -52,12 +59,15 @@ public class Info implements Runnable {
         }
 
         var locks = Api.getLocks(gumConfig.getRemote());
-        for (var lock: locks) {
-            if (lock.getFileNameRegex() != null) {
-                System.out.println("Lock: file - "+ lock.getFileNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
-            }
-            if (lock.getTagNameRegex() != null) {
-                System.out.println("Lock: tag - "+ lock.getTagNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
+        if (!locks.isEmpty()) {
+            System.out.println("Remote Locks:");
+            for (var lock: locks) {
+                if (lock.getFileNameRegex() != null) {
+                    System.out.println("\tfile - "+ lock.getFileNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
+                }
+                if (lock.getTagNameRegex() != null) {
+                    System.out.println("\ttag - "+ lock.getTagNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
+                }
             }
         }
     }

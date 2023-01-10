@@ -92,9 +92,15 @@ public class Api {
         return array == null ? null : Arrays.asList(array);
     }
 
-    public static void deleteLock(String remote, String lockId) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(remote + "/lock/" + lockId);
+    public static boolean deleteLock(String remote, String lockId) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.delete(remote + "/lock/" + lockId);
+            return true;
+        }
+        catch (HttpClientErrorException.Conflict e) {
+            return false;
+        }
     }
 
     public static List<TagVersionDto> getTagVersions(String remote, String tagName) {

@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 
 public class GumUtils {
     public static Path findGumPath() {
@@ -76,7 +77,15 @@ public class GumUtils {
         }
     }
 
-    public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) { //TODO remove local fileVersions not present in tagVersion
+    public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
+        for (var localFileVersion : gumConfig.getLocalFileVersions()) {
+            if (tagVersionDto.getFileVersions().stream().noneMatch(tagFileVersion -> tagFileVersion.getFileName().equals(localFileVersion.getFileName()))) {
+                localFileVersion.setDeleted(true);
+                setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), localFileVersion);
+                gumConfig.getLocalFileVersions().remove(localFileVersion);
+                GumUtils.writeGumConfig(gumConfig);
+            }
+        }
         GumUtils.setDirectoryToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), tagVersionDto.getFileVersions());
         gumConfig.setBaseTagVersion(tagVersionDto);
         gumConfig.setLocalFileVersions(tagVersionDto.getFileVersions());
@@ -110,5 +119,16 @@ public class GumUtils {
         } catch (Exception e) {
             System.out.println("Could not set file '" + fileVersion.getFileName() + "' to version.");
         }
+    }
+
+    public static void setFileToVersion(FullGumConfig gumConfig, FileVersionDto fileVersion, Optional<FileVersionDto> previousLocal) {
+        GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
+        if (previousLocal.isPresent()) {
+            gumConfig.getLocalFileVersions().remove(previousLocal.get());
+        }
+        if (!fileVersion.isDeleted()) {
+            gumConfig.getLocalFileVersions().add(fileVersion);
+        }
+        GumUtils.writeGumConfig(gumConfig);
     }
 }

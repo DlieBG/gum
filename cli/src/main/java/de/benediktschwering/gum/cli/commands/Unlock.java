@@ -12,6 +12,8 @@ public class Unlock implements Runnable {
     @Override
     public void run() {
         var gumConfig = GumUtils.getGumConfigOrExit();
-        Api.deleteLock(gumConfig.getRemote(), lockId);
+        if (!Api.deleteLock(gumConfig.getRemote(), lockId)) {
+            System.out.println("Could not delete lock, is it owned by somebody else?");
+        }
     }
 }

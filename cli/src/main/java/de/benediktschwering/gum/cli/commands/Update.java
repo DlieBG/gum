@@ -9,16 +9,15 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 @CommandLine.Command(name = "update")
 @Component
 public class Update implements Runnable {
-    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    @CommandLine.Option(names = {"-f", "--file"})
     String file;
-    @CommandLine.Option(names = {"-y", "--yes"}, required = false)
+    @CommandLine.Option(names = {"-y", "--yes"})
     boolean yes;
     @Override
     public void run() {
@@ -85,12 +84,7 @@ public class Update implements Runnable {
             }
             var fileVersion = Api.createFileVersion(gumConfig.getRemote(), new CreateFileVersionDto(relativeFileName.toString(), gumConfig.getUser()));
             fileVersion = Api.createFileVersionFile(gumConfig.getRemote(), fileVersion.getId(), fileToUpdate.toFile());
-            GumUtils.setFileToState(gumConfig.getRepositoryPath(), gumConfig.getRemote(), fileVersion);
-            if (previousLocal.isPresent()) {
-                gumConfig.getLocalFileVersions().remove(previousLocal.get());
-            }
-            gumConfig.getLocalFileVersions().add(fileVersion);
-            GumUtils.writeGumConfig(gumConfig);
+            GumUtils.setFileToVersion(gumConfig, fileVersion, previousLocal);
             System.out.println("Updated: '" + relativeFileName + "' to '" + fileVersion.getId() + "'.");
         }
         catch (Exception e) {

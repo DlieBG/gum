@@ -8,9 +8,9 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "lock")
 @Component
 public class Lock implements Runnable {
-    @CommandLine.Option(names = {"-f", "--file"}, required = false)
+    @CommandLine.Option(names = {"-f", "--file"})
     String file;
-    @CommandLine.Option(names = {"-t", "--tag"}, required = false)
+    @CommandLine.Option(names = {"-t", "--tag"})
     String tag;
     @Override
     public void run() {
