@@ -19,7 +19,7 @@
             <a class="history" href="{data.fileVersion.id}/history">history</a>
 
             {#if !data.fileVersion.deleted}
-                <a href="{data.api}/{data.repository.name}/fileversion/{data.fileVersion.id}/file" target="_blank"
+                <a href="{data.publicApi}/{data.repository.name}/fileversion/{data.fileVersion.id}/file" target="_blank"
                    class="download">download</a>
             {/if}
         </div>

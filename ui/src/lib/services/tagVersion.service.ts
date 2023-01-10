@@ -1,9 +1,9 @@
-import {url} from "./url.service";
+import {api} from "./api.service";
 import {AvatarService} from "./avatar.service";
 
 export class TagVersionService {
     static async getTagVersions(repository: string, name: string) {
-        return await fetch(`${url}/${repository}/tagversion?tagName=${name}`)
+        return await fetch(`${api}/${repository}/tagversion?tagName=${name}`)
             .then(
                 async (response) => {
                     return (await response.json()).map(
@@ -19,7 +19,7 @@ export class TagVersionService {
     }
 
     static async getTagVersion(repository: string, id: string) {
-        return await fetch(`${url}/${repository}/tagversion/${id}`)
+        return await fetch(`${api}/${repository}/tagversion/${id}`)
             .then(
                 async (response) => {
                     let tagVersion = await response.json()

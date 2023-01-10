@@ -1,9 +1,9 @@
-import {url} from "./url.service";
+import {api} from "./api.service";
 import {AvatarService} from "./avatar.service";
 
 export class RepositoryService {
     static async getRepositories() {
-        return await fetch(`${url}`)
+        return await fetch(`${api}`)
             .then(
                 async (response) => {
                     return (await response.json()).map(
@@ -19,7 +19,7 @@ export class RepositoryService {
     }
 
     static async getRepository(name: string) {
-        return await fetch(`${url}/${name}`)
+        return await fetch(`${api}/${name}`)
             .then(
                 async (response) => {
                     let repository = await response.json()
@@ -33,7 +33,7 @@ export class RepositoryService {
     }
 
     static async createRepository(name: string) {
-        return await fetch(`${url}/${name.toLowerCase()}`, {
+        return await fetch(`${api}/${name.toLowerCase()}`, {
             method: 'POST'
         }).then(
             async (response) => {
