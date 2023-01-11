@@ -105,6 +105,32 @@ public class FileVersionController {
                 .body(gridFsOperations.getResource(file));
     }
 
+    @GetMapping("/{id}/preview")
+    @CrossOrigin
+    public ResponseEntity<Resource> getFileVersionFilePreview(
+            @PathVariable("id") String id
+    ) {
+        GridFSFile file = fileVersionRepository
+                .findById(id)
+                .orElseThrow(GumUtils::NotFound)
+                .getFile(gridFsTemplate)
+                .orElseThrow(GumUtils::NotFound);
+
+        return ResponseEntity
+                .ok()
+                .contentType(
+                        MediaType.asMediaType(
+                                MimeType.valueOf(
+                                        file
+                                                .getMetadata()
+                                                .get("_contentType")
+                                                .toString()
+                                )
+                        )
+                )
+                .body(gridFsOperations.getResource(file));
+    }
+
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
     public FileVersionDto createFileVersion(

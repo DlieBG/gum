@@ -1,6 +1,7 @@
 <script>
     import {fly} from 'svelte/transition';
-    import FilePreview from "./FilePreview.svelte";
+    import TextPreview from "./TextPreview.svelte";
+    import ImagePreview from "./ImagePreview.svelte";
 
     export let data;
 </script>
@@ -26,11 +27,12 @@
     </div>
 
     <div class="content">
-        <slot/>
         {#if data.fileVersion.deleted}
-            <span>This file was deleted</span>
+            <div class="deleted">This file was deleted</div>
+        {:else if ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.')[1])}
+            <ImagePreview {data}/>
         {:else}
-            <FilePreview/>
+            <TextPreview {data}/>
         {/if}
     </div>
 </div>
@@ -88,6 +90,11 @@
     }
 
     .content {
-        padding: .5em;
+        background-color: #1e1e1e;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .deleted {
+        margin: .5em;
     }
 </style>
