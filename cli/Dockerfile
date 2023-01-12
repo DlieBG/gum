@@ -14,4 +14,5 @@ COPY --from=build /app/target/cli-*-SNAPSHOT.jar /usr/local/gum/gum.jar
 RUN echo "#!/usr/bin/env bash" > /bin/gum
 RUN echo "java -jar /usr/local/gum/gum.jar \"\$@\"" >> /bin/gum
 RUN chmod +x /bin/gum
-# mkdir test && cd test && echo "tester" | gum init http://localhost:8080/api/test
+
+WORKDIR /gum
