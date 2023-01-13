@@ -1,5 +1,12 @@
 <script>
+    import {diffIds} from "./stores";
+    import {onDestroy, onMount} from "svelte";
+
     export let data;
+
+    onMount(() => {
+        diffIds.set([]);
+    });
 
     function toTimestamp(id) {
         return new Date(parseInt(id.substr(0, 8), 16) * 1000).toLocaleString('de-DE', {
@@ -19,6 +26,8 @@
                 <img src={fileVersion.avatar}>
 
                 <a class="id" href="../{fileVersion.id}">{fileVersion.id}</a>
+
+                <span class="user">by {fileVersion.user}</span>
             </div>
 
             {#if index == 0}
@@ -29,7 +38,14 @@
                 <span class="current">current</span>
             {/if}
 
-            <span class="timestamp">{toTimestamp(fileVersion.id)}</span>
+            <div>
+                <span class="timestamp">
+                    {toTimestamp(fileVersion.id)}
+
+                    <input type=checkbox disabled={fileVersion.deleted || ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.')[1])} bind:group={$diffIds} value={fileVersion.id}>
+                </span>
+
+            </div>
         </div>
 
         {#if index !== data.fileVersions.length - 1}
@@ -67,6 +83,11 @@
         text-decoration: underline;
         text-decoration-color: cornflowerblue;
         text-decoration-thickness: 2px;
+    }
+
+    .user {
+        color: #b3b3b3;
+        margin-left: .75em;
     }
 
     .latest {

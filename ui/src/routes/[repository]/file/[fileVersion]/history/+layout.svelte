@@ -20,6 +20,7 @@
     .body {
         border: 1px solid #383838;
         border-radius: 8px;
+        margin-top: 1em;
     }
 
     .header {

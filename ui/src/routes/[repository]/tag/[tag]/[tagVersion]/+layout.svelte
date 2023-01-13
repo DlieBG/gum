@@ -10,6 +10,7 @@
 
             <div>
                 TagVersion <span class="id">{data.tagVersion.id}</span>
+                <span class="user">by {data.tagVersion.user}</span>
             </div>
         </div>
 
@@ -53,6 +54,10 @@
         text-decoration: underline;
         text-decoration-color: crimson;
         text-decoration-thickness: 2px;
+    }
+
+    .user {
+        color: #b3b3b3;
     }
 
     a, a:visited {
