@@ -19,6 +19,8 @@
                 <img src={tagVersion.avatar}>
 
                 <a class="id" href={tagVersion.id}>{tagVersion.id}</a>
+
+                <span class="user">by {tagVersion.user}</span>
             </div>
 
             {#if index == 0}
@@ -63,6 +65,11 @@
         text-decoration: underline;
         text-decoration-color: crimson;
         text-decoration-thickness: 2px;
+    }
+
+    .user {
+        color: #b3b3b3;
+        margin-left: .75em;
     }
 
     .latest {

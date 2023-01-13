@@ -13,6 +13,7 @@
 
             <div>
                 FileVersion <span class="id">{data.fileVersion.id}</span>
+                <span class="user">by {data.fileVersion.user}</span>
             </div>
         </div>
 
@@ -41,7 +42,7 @@
     .body {
         border: 1px solid #383838;
         border-radius: 8px;
-        margin-top: 2em;
+        margin-top: 1em;
     }
 
     .header {
@@ -68,6 +69,10 @@
         text-decoration: underline;
         text-decoration-color: cornflowerblue;
         text-decoration-thickness: 2px;
+    }
+
+    .user {
+        color: #b3b3b3;
     }
 
     a, a:visited {
