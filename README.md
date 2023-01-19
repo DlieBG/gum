@@ -31,7 +31,7 @@ docker run -it --rm ghcr.io/dliebg/gum/cli:main
 ### init
 The first thing you have to do, is to initialise a repository from a remote server. You can do it with the following command, but please change the URL of your upstream.
 ```
-gum init https://gum.benedikt-schwering.de/repo-name
+gum init https://gum.benedikt-schwering.de/api/repo0
 ```
 
 ### info
