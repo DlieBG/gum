@@ -4,15 +4,19 @@
 
 <div class="body">
     <div class="header">
-        <img src={data.repository.avatar}>
-        <h2>
-            Repository
-            <span class="name">{data.repository.name}</span>
-        </h2>
+        <div class="info">
+            <img src={data.repository.avatar}>
+            <h2>
+                Repository
+                <a class="name" href="/{data.repository.name}">{data.repository.name}</a>
+            </h2>
+        </div>
+
+        <a class="locks" href="/{data.repository.name}/lock">locks</a>
     </div>
 
     <div class="content">
-        <slot />
+        <slot/>
     </div>
 </div>
 
@@ -23,6 +27,12 @@
 
     .header {
         display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .info {
+        display: flex;
         align-items: center;
     }
 
@@ -32,11 +42,21 @@
 
     h2 {
         margin: 1em;
+        width: 100%;
     }
 
     .name {
         text-decoration: underline;
         text-decoration-color: forestgreen;
         text-decoration-thickness: 3px;
+    }
+
+    .locks {
+        color: #f21b95 !important;
+    }
+
+    a, a:visited {
+        text-decoration: none;
+        color: #fff;
     }
 </style>
