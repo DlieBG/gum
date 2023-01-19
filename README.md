@@ -21,7 +21,7 @@ Everything alright mate?
 
 ## CLI
 Ok, let us look at the CLI. The CLI is the best way to interact with a gum server. There is also a webclient, but you only need it to create a new repo. So I think you agree, that we want to use the CLI, right? \
-Before I start explanining the exact functionalities, you should understand what will happen. When you initialise a repo locally, gum will create the magic `.gum` folder. In this folder there are two files. One for the upstream information and another for you user information. You should leave them alone and do not touch them! Actually you can forget everything I said, but I wanted to say it at least once. Psssst, last night I heard a bearded mystical being say that you can change your identity by manipulating one of these files. Pretty creepy!
+Before I start explanining the exact functionalities, you should understand what will happen. When you initialise a repo locally, gum will create the magic `.gum` folder. In this folder there is a config file. You should leave it alone! Actually you can forget everything I said, but I wanted to say it at least once. Psssst, last night I heard a bearded mystical being say that you can change your identity by manipulating this file. Pretty creepy!
 
 ### init
 The first thing you have to do, is to initialise a repository from a remote server. You can do it with the following command, but please change the URL of your upstream.
