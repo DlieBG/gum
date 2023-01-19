@@ -1,6 +1,6 @@
 <script>
     import {diffIds} from "./stores";
-    import {onDestroy, onMount} from "svelte";
+    import {onMount} from "svelte";
 
     export let data;
 
