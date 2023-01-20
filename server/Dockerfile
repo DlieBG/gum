@@ -6,7 +6,7 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src src
 
-RUN gradle build -x test --no-daemon
+RUN gradle build --no-daemon
 RUN rm build/libs/*-plain.jar
 
 FROM amazoncorretto:17-alpine
