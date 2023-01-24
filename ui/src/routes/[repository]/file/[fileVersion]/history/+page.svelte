@@ -1,12 +1,15 @@
 <script>
     import {diffIds} from "./stores";
-    import {onMount} from "svelte";
+    import {onDestroy, onMount} from "svelte";
 
     export let data;
 
-    onMount(() => {
+    let clearDiffIds = () => {
         diffIds.set([]);
-    });
+    };
+
+    onMount(clearDiffIds);
+    onDestroy(clearDiffIds);
 
     function toTimestamp(id) {
         return new Date(parseInt(id.substr(0, 8), 16) * 1000).toLocaleString('de-DE', {
