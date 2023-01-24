@@ -45,7 +45,7 @@
         width: 100%;
     }
 
-    .name {
+    .name, .name:visited {
         text-decoration: underline;
         text-decoration-color: forestgreen;
         text-decoration-thickness: 3px;
