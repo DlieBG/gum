@@ -65,7 +65,7 @@ public class Diff implements Runnable {
     public void diff(String first, File firstFile, String second, File secondFile) {
         try {
             var firstInput = new FileInputStream(firstFile);
-            var secondInput = new FileInputStream(firstFile);
+            var secondInput = new FileInputStream(secondFile);
             if (DigestUtils.sha256Hex(firstInput).equals(DigestUtils.sha256Hex(secondInput))) {
                 System.out.println("Files are equal!");
                 return;
@@ -73,18 +73,12 @@ public class Diff implements Runnable {
         } catch(Exception ignored) {
 
         }
-        System.out.println("### "+ first +" ###");
+        printFile(first, firstFile);
         System.out.println();
-        try {
-            var input = new BufferedReader(new FileReader(firstFile));
-            String line;
-            while( (line = input.readLine()) != null ) {
-                System.out.println(line);
-            }
-        } catch (Exception e) {
-            System.out.println("Could not display file...");
-        }
-        System.out.println();
+        printFile(second, secondFile);
+    }
+
+    public void printFile(String second, File secondFile) {
         System.out.println("### "+ second +" ###");
         System.out.println();
         try {

@@ -19,11 +19,11 @@ public class Info implements Runnable {
         System.out.println("Remote: " + gumConfig.getRemote());
         System.out.println("Username: " + gumConfig.getUser());
         var baseTag = gumConfig.getBaseTagVersion();
-        System.out.println("Local TagVersion base: " + baseTag.getTagName() + " : " + baseTag.getId() + " by " + baseTag.getUser());
+        System.out.println("Local TagVersion base: " + baseTag.getTagName() + " : " + baseTag.getId() + " by " + baseTag.getUser() + " at " + GumUtils.dateFromObjectId(baseTag.getId()));
         var fileVersions = gumConfig.getLocalFileVersions();
         System.out.println("Local FileVersions:");
         for (var fileVersion : fileVersions) {
-            System.out.print("\t" + fileVersion.getFileName() + " : " + fileVersion.getId() + " by " + fileVersion.getUser());
+            System.out.print("\t" + fileVersion.getFileName() + " : " + fileVersion.getId() + " by " + fileVersion.getUser() + " at " + GumUtils.dateFromObjectId(fileVersion.getId()));
             var baseFileVersion = baseTag.getFileVersions().stream().filter(fv -> fv.getFileName().equals(fileVersion.getFileName())).findFirst();
             if (baseFileVersion.isPresent()) {
                 var baseVersion = baseFileVersion.get();
@@ -48,13 +48,13 @@ public class Info implements Runnable {
         for (var tag : repository.getTags()) {
             var tagVersions = Api.getTagVersions(gumConfig.getRemote(), tag);
             var tagVersion = tagVersions.get(0);
-            System.out.print("\t" + tagVersion.getTagName() + " : " + tagVersion.getId() + " by " + tagVersion.getUser());
+            System.out.print("\t" + tagVersion.getTagName() + " : " + tagVersion.getId() + " by " + tagVersion.getUser() + " at " + GumUtils.dateFromObjectId(tagVersion.getId()));
             if (tagVersion.getId().equals(gumConfig.getBaseTagVersion().getId())) {
                 System.out.print(" (base)");
             }
             System.out.println();
             for (var fileVersion : tagVersion.getFileVersions()) {
-                System.out.println("\t\t" + fileVersion.getFileName() + " : " + fileVersion.getId() + " by " + fileVersion.getUser());
+                System.out.println("\t\t" + fileVersion.getFileName() + " : " + fileVersion.getId() + " by " + fileVersion.getUser() + " at " + GumUtils.dateFromObjectId(fileVersion.getId()));
             }
         }
 
@@ -63,10 +63,10 @@ public class Info implements Runnable {
             System.out.println("Remote Locks:");
             for (var lock: locks) {
                 if (lock.getFileNameRegex() != null) {
-                    System.out.println("\tfile - "+ lock.getFileNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
+                    System.out.println("\tfile - "+ lock.getFileNameRegex() + " : " + lock.getId() + " by " + lock.getUser() + " at " + GumUtils.dateFromObjectId(lock.getId()));
                 }
                 if (lock.getTagNameRegex() != null) {
-                    System.out.println("\ttag - "+ lock.getTagNameRegex() + " : " + lock.getId() + " by " + lock.getUser());
+                    System.out.println("\ttag - "+ lock.getTagNameRegex() + " : " + lock.getId() + " by " + lock.getUser() + " at " + GumUtils.dateFromObjectId(lock.getId()));
                 }
             }
         }

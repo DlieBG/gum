@@ -13,8 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static java.lang.Integer.parseInt;
 
 public class GumUtils {
     public static Path findGumPath() {
@@ -131,5 +135,11 @@ public class GumUtils {
             gumConfig.getLocalFileVersions().add(fileVersion);
         }
         GumUtils.writeGumConfig(gumConfig);
+    }
+
+    public static String dateFromObjectId(String id) {
+        var date = new Date(parseInt(id.substring(0, 8), 16) * 1000L);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return formatter.format(date);
     }
 }
