@@ -65,7 +65,7 @@ public class Api {
                 return ret;
             });
         }
-        catch (HttpClientErrorException.Conflict e) {
+        catch (HttpClientErrorException e) {
             return null;
         }
     }
@@ -110,7 +110,7 @@ public class Api {
             restTemplate.exchange(remote + "/lock/" + lockId, HttpMethod.DELETE, entity, Object.class);
             return true;
         }
-        catch (HttpClientErrorException.Conflict e) {
+        catch (HttpClientErrorException e) {
             return false;
         }
     }

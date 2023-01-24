@@ -29,5 +29,6 @@ public class Tag implements Runnable {
             createLock.setTagNameRegex(tag);
             var lock = Api.createLock(gumConfig.getRemote(), createLock);
         }
+        System.out.println("Created TagVersion " + tagVersion.getTagName() + " : " + tagVersion.getId());
     }
 }

@@ -25,6 +25,12 @@ public class Init implements Runnable {
                 remote = stringBuffer.toString();
             }
 
+            if (!remote.contains("api")) {
+                StringBuffer stringBuffer = new StringBuffer(remote);
+                stringBuffer.insert(remote.lastIndexOf("/"), "/api");
+                remote = stringBuffer.toString();
+            }
+
             var gumPath = GumUtils.findGumPath();
             if (gumPath != null) {
                 System.out.printf("found existing .gum folder at '%s' sub gum repositories are not supported!%n", gumPath);
@@ -58,6 +64,14 @@ public class Init implements Runnable {
             }
             var fullGumConfig = new FullGumConfig(cwd, remote, userName, baseTagVersion, baseTagVersion.getFileVersions());
             GumUtils.writeGumConfig(fullGumConfig);
+            System.out.println("""
+          ___________________________________________
+         /                                           |
+        /  Hoot! Hoot! You can now start using gum.   |
+ /\\ /\\ /_______________________________________________|
+((ovo))
+():::()
+  VVV""");
         } catch (Exception e) {
             System.out.println("Could not init repository, is the remote correct?");
         }

@@ -6,6 +6,7 @@ import picocli.CommandLine;
 
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Date;
 
 @CommandLine.Command(name = "history")
 @Component
@@ -28,7 +29,7 @@ public class History implements Runnable {
                 return;
             }
             for (var tagVersion : tagVersions) {
-                System.out.print(tagVersion.getId() + " by " + tagVersion.getUser());
+                System.out.print(tagVersion.getId() + " by " + tagVersion.getUser() + " at " + GumUtils.dateFromObjectId(tagVersion.getId()));
                 if (tagVersion.getId().equals(gumConfig.getBaseTagVersion().getId())) {
                     System.out.print(" (base)");
                 }
@@ -46,7 +47,7 @@ public class History implements Runnable {
                 return;
             }
             for (var fileVersion : fileVersions) {
-                System.out.print(fileVersion.getId() + " by " + fileVersion.getUser());
+                System.out.print(fileVersion.getId() + " by " + fileVersion.getUser() + " at " + GumUtils.dateFromObjectId(fileVersion.getId()));
                 if (fileVersion.isDeleted()) {
                     System.out.print(" (deleted)");
                 }
