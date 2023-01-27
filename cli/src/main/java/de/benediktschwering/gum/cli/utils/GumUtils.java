@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +83,7 @@ public class GumUtils {
     }
 
     public static void setGumToState(FullGumConfig gumConfig, TagVersionDto tagVersionDto) {
-        var versionsCopy = gumConfig.getLocalFileVersions().subList(0, gumConfig.getLocalFileVersions().size());
+        var versionsCopy = new ArrayList<FileVersionDto>(gumConfig.getLocalFileVersions());
         for (var localFileVersion : versionsCopy) {
             if (tagVersionDto.getFileVersions().stream().noneMatch(tagFileVersion -> tagFileVersion.getFileName().equals(localFileVersion.getFileName()))) {
                 localFileVersion.setDeleted(true);
@@ -110,7 +111,9 @@ public class GumUtils {
         }
         if (fileVersion.isDeleted()) {
             try {
-                Files.delete(Paths.get(fileVersion.getFileName()));
+                if (Files.exists(Paths.get(fileVersion.getFileName()))) {
+                    Files.delete(Paths.get(fileVersion.getFileName()));
+                }
             } catch (Exception e) {
                 System.out.println("Could not set file '" + fileVersion.getFileName() + "' to version.");
             }
