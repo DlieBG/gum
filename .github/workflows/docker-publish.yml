@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: cli
-          platforms: linux/amd64 #,linux/arm/v7,linux/arm64/v8
+          platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: ghcr.io/dliebg/gum/cli:${{ github.ref_name }}
 
