@@ -1,5 +1,4 @@
 <script>
-    import {editor} from 'monaco-editor';
     import {onMount} from "svelte";
 
     export let data;
@@ -8,6 +7,8 @@
     let loading = true;
 
     onMount(async () => {
+        const {editor} = await import('monaco-editor');
+
         editor.create(element, {
             value: await (await fetch(`${data.publicApi}/${data.repository.id}/fileversion/${data.fileVersion.id}/preview`)).text(),
             theme: 'vs-dark',
