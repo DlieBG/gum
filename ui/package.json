@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"dev-bene": "VITE_PUBLIC_API=http://10.17.2.3:8080/api VITE_API=http://10.17.2.3:8080/api vite dev",
+		"dev-public": "VITE_PUBLIC_API=https://gum.benedikt-schwering.de/api VITE_API=https://gum.benedikt-schwering.de/api vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
