@@ -26,6 +26,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"monaco-editor": "^0.34.1"
+		"monaco-editor": "^0.34.1",
+		"svelte-pdf": "^1.0.16"
 	}
 }

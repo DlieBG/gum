@@ -34,10 +34,10 @@
 
 <style>
     .body {
-        height: 500px;
+        height: 600px;
     }
 
-    .loading{
+    .loading {
         margin: .5em;
     }
 

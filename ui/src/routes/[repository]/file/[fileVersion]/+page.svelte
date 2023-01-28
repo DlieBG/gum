@@ -2,6 +2,7 @@
     import {fly} from 'svelte/transition';
     import TextPreview from "./TextPreview.svelte";
     import ImagePreview from "./ImagePreview.svelte";
+    import PdfPreview from "./PdfPreview.svelte";
 
     export let data;
 </script>
@@ -32,6 +33,8 @@
             <div class="deleted">This file was deleted</div>
         {:else if ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.')[1])}
             <ImagePreview {data}/>
+        {:else if ['pdf'].includes(data.fileVersion.fileName.split('.')[1])}
+            <PdfPreview {data}/>
         {:else}
             <TextPreview {data}/>
         {/if}
