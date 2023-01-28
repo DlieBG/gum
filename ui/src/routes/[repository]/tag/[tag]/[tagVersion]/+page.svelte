@@ -13,7 +13,7 @@
 </script>
 
 <div class="body">
-    {#each data.tagVersion.fileVersions as fileVersion, index (fileVersion.id)}
+    {#each data.tagVersion.fileVersions.sort((a,b) => { return a.fileName.localeCompare(b.fileName); }) as fileVersion, index (fileVersion.id)}
         <div class="file {fileVersion.deleted ? 'deleted' : ''}">
             <a href="../../file/{fileVersion.id}" class="filename">{fileVersion.fileName}</a>
 
