@@ -11,7 +11,8 @@
     .body {
         border: 1px solid forestgreen;
         border-radius: 12px;
-        width: 250px;
+        min-width: 250px;
+        max-width: 375px;
         height: 100%;
         display: flex;
         align-items: center;

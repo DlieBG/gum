@@ -45,7 +45,7 @@
                 <span class="timestamp">
                     {toTimestamp(fileVersion.id)}
 
-                    <input type=checkbox disabled={fileVersion.deleted || ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.')[1])} bind:group={$diffIds} value={fileVersion.id}>
+                    <input type=checkbox disabled={fileVersion.deleted || ['png', 'jpg', 'gif', 'pdf'].includes(data.fileVersion.fileName.split('.')[1])} bind:group={$diffIds} value={fileVersion.id}>
                 </span>
 
             </div>
