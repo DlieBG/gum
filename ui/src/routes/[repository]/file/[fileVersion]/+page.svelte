@@ -31,9 +31,9 @@
     <div class="content">
         {#if data.fileVersion.deleted}
             <div class="deleted">This file was deleted</div>
-        {:else if ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.')[1])}
+        {:else if ['png', 'jpg', 'gif'].includes(data.fileVersion.fileName.split('.').at(-1))}
             <ImagePreview {data}/>
-        {:else if ['pdf'].includes(data.fileVersion.fileName.split('.')[1])}
+        {:else if ['pdf'].includes(data.fileVersion.fileName.split('.').at(-1))}
             <PdfPreview {data}/>
         {:else}
             <TextPreview {data}/>
