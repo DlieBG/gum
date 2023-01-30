@@ -1,5 +1,4 @@
 <script>
-    import {editor} from 'monaco-editor';
     import {onMount} from "svelte";
 
     export let data;
@@ -8,6 +7,8 @@
     let loading = true;
 
     onMount(async () => {
+        const {editor} = await import('monaco-editor');
+
         let diffEditor = editor.createDiffEditor(element, {
             theme: 'vs-dark',
             readOnly: true,
@@ -43,7 +44,7 @@
 
 <style>
     .body {
-        height: 500px;
+        height: 600px;
     }
 
     .loading {
