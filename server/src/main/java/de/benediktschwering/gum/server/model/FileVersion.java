@@ -2,9 +2,12 @@ package de.benediktschwering.gum.server.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import de.benediktschwering.gum.server.controller.FileVersionController;
 import lombok.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,18 +16,28 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.LogManager;
 
 @Document
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class FileVersion {
+
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(FileVersion.class.getName());
+    private static final LogManager LOGMANAGER = LogManager.getLogManager();
+
+    static {
+        try {
+            LOGMANAGER.readConfiguration(new FileInputStream("./aufgabe2.properties"));
+        } catch (IOException e) {
+            LOGGER.error("Konfigurationsdatei nicht gefunden", e);
+            throw new RuntimeException(e);
+        }
+    }
 
     @Id
     private String id;
@@ -70,6 +83,9 @@ public class FileVersion {
             ObjectId gridFsId = gridFsTemplate.store(inputStream3, fileName, contentType, metadata);
 
             setGridFsId(gridFsId);
-        } catch(IOException e) { }
+        } catch(IOException e) {
+            LOGGER.error("Fehler beim Speichern der Datei", e);
+            throw new RuntimeException(e);
+        }
     }
 }

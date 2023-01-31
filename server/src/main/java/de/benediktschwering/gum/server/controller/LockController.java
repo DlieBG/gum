@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("{repositoryName}/lock")
 public class LockController {
+
+    Logger logger = Logger.getLogger("app");
     @Autowired
     private RepositoryRepository repositoryRepository;
     @Autowired
@@ -27,7 +30,6 @@ public class LockController {
         Repository repository = repositoryRepository
                 .searchRepositoryByName(repositoryName)
                 .orElseThrow(GumUtils::NotFound);
-
         return lockRepository
                 .searchLocksByRepositoryOrderByIdDesc(repository)
                 .stream()
@@ -56,6 +58,7 @@ public class LockController {
     ) {
         var lock = lockRepository.findById(id).orElseThrow(GumUtils::NotFound);
         if (!lock.getUser().equals(deleteLockDto.getUser())) {
+            logger.severe("Lock is not owned by user");
             throw GumUtils.Conflict();
         }
         lockRepository.deleteById(id);
@@ -72,9 +75,11 @@ public class LockController {
                 .orElseThrow(GumUtils::NotFound);
         var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
         if (locks != null && locks.stream().anyMatch(lock -> lock.getFileNameRegex() != null && createLockDto.getFileNameRegex().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            logger.severe("lock already exists due to file name");
             throw GumUtils.Conflict();
         }
         if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createLockDto.getTagNameRegex().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createLockDto.getUser()))) {
+            logger.severe("lock already exists due to tag name");
             throw GumUtils.Conflict();
         }
         return new LockDto(

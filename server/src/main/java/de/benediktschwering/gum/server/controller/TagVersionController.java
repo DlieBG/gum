@@ -15,10 +15,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("{repositoryName}/tagversion")
 public class TagVersionController {
+
+    Logger logger = Logger.getLogger("app");
     @Autowired
     private RepositoryRepository repositoryRepository;
     @Autowired
@@ -77,7 +80,9 @@ public class TagVersionController {
                 .orElseThrow(GumUtils::NotFound);
         var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
         if (locks != null && locks.stream().anyMatch(lock -> lock.getTagNameRegex() != null && createTagVersionDto.getTagName().startsWith(lock.getTagNameRegex()) && !lock.getUser().equals(createTagVersionDto.getUser()))) {
+            logger.severe("Could not create tag version because of lock");
             throw GumUtils.Conflict();
+
         }
         return new TagVersionDto(
                 tagVersionRepository.save(

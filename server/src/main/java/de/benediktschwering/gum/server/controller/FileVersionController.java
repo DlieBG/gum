@@ -9,6 +9,7 @@ import de.benediktschwering.gum.server.repository.FileVersionRepository;
 import de.benediktschwering.gum.server.repository.LockRepository;
 import de.benediktschwering.gum.server.repository.RepositoryRepository;
 import de.benediktschwering.gum.server.utils.GumUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -21,11 +22,17 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("{repositoryName}/fileversion")
 public class FileVersionController {
+
+    Logger logger = Logger.getLogger("app");
 
     @Autowired
     private RepositoryRepository repositoryRepository;
@@ -142,6 +149,7 @@ public class FileVersionController {
                 .orElseThrow(GumUtils::NotFound);
         var locks = lockRepository.searchLocksByRepositoryOrderByIdDesc(repository);
         if (locks != null && locks.stream().anyMatch(lock -> lock.getFileNameRegex() != null && createFileVersion.getFileName().startsWith(lock.getFileNameRegex()) && !lock.getUser().equals(createFileVersion.getUser()))) {
+            logger.warning("could not create file version because of lock");
             throw GumUtils.Conflict();
         }
         return new FileVersionDto(

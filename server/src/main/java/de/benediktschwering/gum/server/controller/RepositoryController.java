@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("")
 public class RepositoryController {
+
+    Logger logger = Logger.getLogger("app");
     @Autowired
     private RepositoryRepository repositoryRepository;
     @Autowired
@@ -54,6 +57,7 @@ public class RepositoryController {
                 .isPresent()
         )
             throw GumUtils.Conflict();
+            logger.severe("Repository already exists");
 
         Repository newRepository = repositoryRepository.save(
                 new Repository(
