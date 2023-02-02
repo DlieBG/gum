@@ -1,0 +1,25 @@
+# docker compose -f docker-compose-local.yml up --build --force-recreate
+version: '3'
+
+services:
+  db:
+    image: mongo
+    restart: unless-stopped
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      - MONGO_HOST=db
+      - MONGO_PORT=27017
+  
+  ui:
+    build: ./ui
+    restart: unless-stopped
+
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - 8169:80
+      
